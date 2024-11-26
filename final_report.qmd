@@ -1,0 +1,31 @@
+---
+title: "Relatório Final"
+author: "Meari Caldeira & Thaís G. P. Faria"
+format: html
+editor: source
+---
+
+## Introduçao
+- Contexto da disciplina
+- Pergunta básica do projeto
+- Hipóteses
+  - Dags?
+  - Modelos escolhidos
+
+## Modelagem
+### Pacotes necessários
+- Here
+- dplyr
+
+### Dados
+- Descrição básica e fonte de cada um
+- Preparação da tabela de análise
+- Estatística descritiva da tabela
+
+### Ajuste de modelos e diagnóstico
+- Fitting
+- Diagnóstico
+
+### Testagem de hipóteses?
+
+## Conclusões
