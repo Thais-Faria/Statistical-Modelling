@@ -3,28 +3,39 @@ title: "Relatório Final"
 author: "Meari Caldeira & Thaís G. P. Faria"
 format: html
 editor: source
+bibliography: references.bib
 ---
 
-## Introduçao
-- Contexto da disciplina
-- Pergunta básica do projeto
-- Hipóteses
-  - Dags?
-  - Modelos escolhidos
+## Introdução
+
+-   Pergunta principal do projeto "A prevalência de doenças mentais da população brasileira está correlacionada com desigualdade social?"
+-   Foco em 5 doenças mentais: Esquizofrenia, Transtorno Bipolar, Transtorno Alimentar, Ansiedade e Depressão
+    -   Esquizofrenia @Vereczkei_Mirnics_schizophrenia_2011
+    -   Transtorno Bipolar @gordovez_genetics_2020
+    -   Transtorno Alimentar
+    -   Ansiedade
+    -   Depressão
+-   Hipóteses
+    -   Dags?
+    -   Modelos escolhidos
 
 ## Modelagem
+
 ### Pacotes necessários
-- Here
-- dplyr
+
+-   Here[@here]
+-   dplyr[@dplyr]
 
 ### Dados
-- Descrição básica e fonte de cada um
-- Preparação da tabela de análise
-- Estatística descritiva da tabela
+
+-   Descrição básica e fonte de cada um
+-   Preparação da tabela de análise
+-   Estatística descritiva da tabela
 
 ### Ajuste de modelos e diagnóstico
-- Fitting
-- Diagnóstico
+
+-   Fitting
+-   Diagnóstico
 
 ### Testagem de hipóteses?
 

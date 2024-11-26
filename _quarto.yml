@@ -1,5 +1,10 @@
 project:
   title: "Modelagem Estatística"
 
-
-
+number-sections: true
+code-link: true
+link-external-icon: true
+link-external-newwindow: true
+link-citations: true
+link-bibliography: true
+bibliography: references.bib
