@@ -1,15 +1,20 @@
-##################################
-# TABLE
+################################################
+# CREATE DISORDERS X POPULATION  AND GINI DATA #
+################################################
 
+# Get raw data
 
+# disorder prevalence dataset
 prevalence <- read.csv(here::here("data","raw","1-mental-illnesses-prevalence.csv"), header=T, sep=",")
 
+# only Brasil data
 brasil <- split(prevalence, as.factor(prevalence$Entity))$Brazil
 
+# get Gini index data for Brasil
 gini <- read.csv(here::here("data","raw","gini.csv"), header=T, sep=",")
 gini$SIPOVGINIBRA[which(gini$SIPOVGINIBRA==".")] <- NA
 
-
+# create dataset of disorder prevalence with Gini
 brasil_with_gini <- data.frame(
   year=brasil[,3],
   gini=gini$SIPOVGINIBRA[c(10:39)],
@@ -27,6 +32,7 @@ write.table(brasil_with_gini, file=(here::here("data","processed","relative_BR_p
 
 # Now adding the population data
 
+# Create population dataset from 1940 to 2019
 population_1940_2010 <- read.csv(here::here("data","raw","population_brasil.csv"), header=T, sep=";")
 population_1940_2010$total <- population_1940_2010[,2]+population_1940_2010[,3]
 population_1940_2010 <- population_1940_2010[,c(1,8)]
