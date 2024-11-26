@@ -1,9 +1,7 @@
 ---
-  title: "TODO"
+title: "QUESTION: Is the prevalence of mental disorders in the Brazilian population correlated to social inequality?"
 output: html_document
 ---
-  
-# QUESTION: Is the prevalence of mental disorders in the Brazilian population correlated to social inequality?
   
 # TO-DO
   
