@@ -9,6 +9,7 @@ bibliography: references.bib
 ## Introdução
 
 -   Pergunta principal do projeto "A prevalência de doenças mentais da população brasileira está correlacionada com desigualdade social?"
+-   Índice de Gini modelado com a Curva de Lorenz
 -   Foco em 5 doenças mentais: Esquizofrenia, Transtorno Bipolar, Transtorno Alimentar, Ansiedade e Depressão
     -   Esquizofrenia @Vereczkei_Mirnics_schizophrenia_2011
     -   Transtorno Bipolar @gordovez_genetics_2020
@@ -23,8 +24,7 @@ bibliography: references.bib
 
 ### Pacotes necessários
 
--   Here[@here]
--   dplyr[@dplyr]
+-   O pacote `here` [@here] é usado para facilitar a reproducibilidade do script em diferentes sistemas operacionais, e o pacote `dplyer` [@dplyr] faz parte do framework Tidyverse [@tidyverse], usado para algumas operações de limpeza e combinação de dados. Para a visualização dos dados, são usados os pacotes ggplot2 [@ggplot2] e cowplot (citação).
 
 ### Dados
 
