@@ -12,6 +12,7 @@ output: html_document
 -   [ ] Em cada país, a gente vai medir a causalidade entre uma métrica de desigualdade (Gini) e a incidência de transtornos mentais
     -   Usar todos os transtornos ou selecionar alguns?
     -   Se a gente usar todos os transtornos, podemos avaliar também a causalidade entre predisposição genética e transtornos, porque esperamos que populações diferentes tenham prevalência diferente de transtornos mentais (e também esperaremos que populações mais homogêneas tenham uma relação de causalidade mais forte entre predisposição genética e transtornos mentais)
+        - Migração afeta a predisposição genética em países menores -> viés
 -   [ ] Refazer DAG
 -   [ ] DHARMa para avaliar a autocorrelação temporal entre os dados - o DHARMa permite fazer análises de autocorrelação temporal usando os resíduos
 
