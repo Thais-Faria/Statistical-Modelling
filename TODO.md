@@ -5,6 +5,32 @@ output: html_document
 
 # TO-DO
 
+-   [ ] Remake table per country, not a time series - REMOVE CONTINENTS
+-   [ ] Split the data by decade, treating each decade as a replica per country
+    -   [ ] Fazer a média por década - usar a função eta?
+    -   [ ] Fazer teste de normalidade nos dados das décadas (gráfico)
+-   [ ] Em cada país, a gente vai medir a causalidade entre uma métrica de desigualdade (Gini) e a incidência de transtornos mentais
+    -   Usar todos os transtornos ou selecionar alguns?
+    -   Se a gente usar todos os transtornos, podemos avaliar também a causalidade entre predisposição genética e transtornos, porque esperamos que populações diferentes tenham prevalência diferente de transtornos mentais (e também esperaremos que populações mais homogêneas tenham uma relação de causalidade mais forte entre predisposição genética e transtornos mentais)
+-   [ ] Refazer DAG
+-   [ ] DHARMa para avaliar a autocorrelação temporal entre os dados - o DHARMa permite fazer análises de autocorrelação temporal usando os resíduos
+
+# HIPÓTESES
+
+- Esquizofrenia e bipolar disorder tenham uma relação causal mais forte with herdabilidade
+- A nível populacional, schizo and bipolar têm efeito causal sobre depressão e ansiedade
+- Depressão e ansiedade têm efeito causal sobre transtornos alimentares
+- Depressão se retroalimenta ao longo das décadas (não sei se vamos conseguir avaliar)
+- Depressão causa ansiedade nas décadas seguintes (não sei se vamos conseguir avaliar)
+- Drogadição é uma variável oculta (não está medindo)
+    - Esquizofrenia, depressão, transtornos alimentares, transtorno bipolar, ansiedade causam drogadição
+    - Drogadição pode causar esquizofrenia nas gerações posteriores (gravidez)
+    - Drogadição causa depressão, ansiedade
+- Depressão e ansiedade se retroalimentam
+- Criminalidade é uma variável oculta que pode causar ansiedade e depressão a nível população
+
+# OLD PROJECT
+
 -   [ ] Look for data for missing years (1990, 1992:1999) - these data don't exist, not even in projections. Should we:
     -   [ ] use populational models considering the fecundity and mortality rates from 1991 to project the population between 1990 and 1999?
     -   [ ] repeat data from 1991 throughout the decade?
