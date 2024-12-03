@@ -8,6 +8,7 @@ output: html_document
 -   [ ] Remake table per country, not a time series - REMOVE CONTINENTS
 -   [ ] Split the data by decade, treating each decade as a replica per country
     -   [ ] Fazer a média por década - usar a função eta?
+    -   [ ] Adapt function eta
     -   [ ] Fazer teste de normalidade nos dados das décadas (gráfico)
 - [ ] Fazer a correlação entre os transtornos
 -   [ ] Em cada país, a gente vai medir a causalidade entre uma métrica de desigualdade (Gini) e a incidência de transtornos mentais
