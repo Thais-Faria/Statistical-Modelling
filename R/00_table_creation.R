@@ -2,6 +2,59 @@
 # CREATE DISORDERS X POPULATION  AND GINI DATA #
 ################################################
 
+library(here)
+
+##### PER COUNTRY #####
+
+# Get raw data
+
+# disorder prevalence dataset
+prevalence <- read.csv(here("data","raw","1-mental-illnesses-prevalence.csv"), header=T, sep=",")
+
+# remove continents from table
+
+countries <- unique(prevalence$Entity)
+countries <- countries[-c(2,5,12,66,67,85,109,112,205,211)]
+
+prevalence_by_country <- prevalence[which(prevalence$Entity %in% countries==T),]
+
+# get Gini index data by country
+
+gini <- read.csv(here("data","raw","economic-inequality-gini-index.csv"), header=T, sep=",")
+
+# create dataset of disorder prevalence with Gini
+prevalence_with_gini <- data.frame(
+  country=prevalence_by_country$Entity,
+  year=prevalence_by_country[,3],
+  schizophrenia=prevalence_by_country[,4],
+  depression=prevalence_by_country[,5],
+  anxiety=prevalence_by_country[,6],
+  bipolar=prevalence_by_country[,7],
+  ed=prevalence_by_country[,8]
+)
+
+prevalence_with_gini$gini <- rep(NA, length(prevalence_with_gini$country))
+
+countries_gini <- unique(gini$Entity)
+
+prevalence_with_gini <- prevalence_with_gini[which(prevalence_with_gini$country %in% countries_gini),]
+
+for(i in 1:length(prevalence_with_gini)){
+  
+  if(prevalence_with_gini[i]==gini$Entity[i]){prevalence_with_gini$gini[i] <- gini$Gini.coefficient}
+  
+}
+
+
+
+
+
+
+
+
+
+
+
 # Get raw data
 
 # disorder prevalence dataset
