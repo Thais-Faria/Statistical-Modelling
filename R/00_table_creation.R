@@ -30,29 +30,58 @@ prevalence_with_gini <- data.frame(
   depression=prevalence_by_country[,5],
   anxiety=prevalence_by_country[,6],
   bipolar=prevalence_by_country[,7],
-  ed=prevalence_by_country[,8]
+  ed=prevalence_by_country[,8],
+  gini=rep(NA,length(prevalence_by_country$Entity))
 )
-
-prevalence_with_gini$gini <- rep(NA, length(prevalence_with_gini$country))
 
 countries_gini <- unique(gini$Entity)
 
 prevalence_with_gini <- prevalence_with_gini[which(prevalence_with_gini$country %in% countries_gini),]
 
-for(i in 1:length(prevalence_with_gini)){
+countries_prevalence <- unique(prevalence_with_gini$country)
+
+
+# Create data frame to store the information
+
+prevalence_gini_intersection <- data.frame(
+  country=NA,
+  year=NA,
+  schizophrenia=NA,
+  depression=NA,
+  anxiety=NA,
+  bipolar=NA,
+  ed=NA,
+  gini=NA
+)
+
+# Let's retrieve the gini data
+
+for(i in 1:length(countries_prevalence)){
   
-  if(prevalence_with_gini[i]==gini$Entity[i]){prevalence_with_gini$gini[i] <- gini$Gini.coefficient}
+  b <- gini[which(gini$Entity==countries_prevalence[i]),]
   
+  a <- prevalence_with_gini[which(prevalence_with_gini$country==countries_prevalence[i]),]
+  
+  a <- a[which((a$year) %in% gini$Year[which(gini$Entity==countries_prevalence[i])]),]
+  
+  b <- b[b$Year %in% a$year,]
+  
+  a$gini <- b[which(b$Entity==countries_prevalence[i]),4]
+  
+  prevalence_gini_intersection <- rbind(prevalence_gini_intersection, a)
+
 }
 
+prevalence_gini_intersection <- prevalence_gini_intersection[-1,] # done!
+
+# Saving this table
+
+write.table(prevalence_gini_intersection, file=here("data", "processed", "relative_world_prevalence_with_gini.txt"), sep="\t", row.names=F)
 
 
 
 
-
-
-
-
+##### OLD ONLY BRAZIL ####
 
 
 # Get raw data
