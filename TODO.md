@@ -5,7 +5,6 @@ output: html_document
 
 # TO-DO
 
-<<<<<<< HEAD
 =======
 -   [ ] Retrieve population data for each country
 -   [ ] Make absolute population table per country
