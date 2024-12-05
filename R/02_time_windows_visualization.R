@@ -6,9 +6,13 @@ library(here)
 library(ggplot2)
 library(cowplot)
 
+##############################
+####### RELATIVE DATA ########
+##############################
+
 # Get mean decade data
 
-decades <- read.table(here("data","processed","decade_means.txt"), sep="\t", header=T)
+decades <- read.table(here("data","processed","decade_means_relative.txt"), sep="\t", header=T)
 
 #### BY DECADE ####
 
@@ -256,3 +260,131 @@ ggplot(as.data.frame(countries$Zambia)) +
   labs(x="Country", y="Prevalence (relative)", fill="Disorders") +
   theme(legend.position="bottom") +
   ggtitle("Zambia")
+
+
+
+
+
+
+
+
+
+##############################
+####### ABSOLUTE DATA ########
+##############################
+
+library(ggplot2)
+library(cowplot)
+
+# Get mean decade data
+
+decades <- read.table(here("data","processed","decade_means_absolute.txt"), sep="\t", header=T)
+
+#### BY DECADE ####
+
+decades$country <- as.factor(decades$country)
+
+decada <- split(decades, decades$decade)
+
+colors <- c("#80c4ba","#e0ac89","#e8b3d4","#acc47c","#cccccc")
+
+### Plotting
+
+# Anxiety
+a1 <- ggplot(as.data.frame(decada$`1990-1999`)) +
+  geom_bar(aes(x=country, y=log(anxiety)), fill=colors[1], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("1990-1999 - Anxiety")
+
+a2 <- ggplot(as.data.frame(decada$`2000-2009`)) +
+  geom_bar(aes(x=country, y=log(anxiety)), fill=colors[1], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2000-2009 - Anxiety")
+
+a3 <- ggplot(as.data.frame(decada$`2010-2019`)) +
+  geom_bar(aes(x=country, y=log(anxiety)), fill=colors[1], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2010-2019 - Anxiety")
+
+# Depression
+a4 <- ggplot(as.data.frame(decada$`1990-1999`)) +
+  geom_bar(aes(x=country, y=log(depression)), fill=colors[2], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("1990-1999 - Depression")
+
+a5 <- ggplot(as.data.frame(decada$`2000-2009`)) +
+  geom_bar(aes(x=country, y=log(depression)), fill=colors[2], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2000-2009 - Depression")
+
+a6 <- ggplot(as.data.frame(decada$`2010-2019`)) +
+  geom_bar(aes(x=country, y=log(depression)), fill=colors[2], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2010-2019 - Depression")
+
+# Bipolar
+a7 <- ggplot(as.data.frame(decada$`1990-1999`)) +
+  geom_bar(aes(x=country, y=log(bipolar)), fill=colors[3], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("1990-1999 - Bipolar")
+
+a8 <- ggplot(as.data.frame(decada$`2000-2009`)) +
+  geom_bar(aes(x=country, y=log(bipolar)), fill=colors[3], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2000-2009 - Bipolar")
+
+a9 <- ggplot(as.data.frame(decada$`2010-2019`)) +
+  geom_bar(aes(x=country, y=log(bipolar)), fill=colors[3], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2010-2019 - Bipolar")
+
+# Schizo
+a10 <- ggplot(as.data.frame(decada$`1990-1999`)) +
+  geom_bar(aes(x=country, y=log(schizophrenia)), fill=colors[4], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("1990-1999 - Schizophrenia")
+
+a11 <- ggplot(as.data.frame(decada$`2000-2009`)) +
+  geom_bar(aes(x=country, y=log(schizophrenia)), fill=colors[4], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2000-2009 - Schizophrenia")
+
+a12 <- ggplot(as.data.frame(decada$`2010-2019`)) +
+  geom_bar(aes(x=country, y=log(schizophrenia)), fill=colors[4], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2010-2019 - Schizophrenia")
+
+# ED
+a13 <- ggplot(as.data.frame(decada$`1990-1999`)) +
+  geom_bar(aes(x=country, y=log(ed)), fill=colors[5], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("1990-1999 - Eating disorders")
+
+a14 <- ggplot(as.data.frame(decada$`2000-2009`)) +
+  geom_bar(aes(x=country, y=log(ed)), fill=colors[5], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2000-2009 - Eating disorders")
+
+a15 <- ggplot(as.data.frame(decada$`2010-2019`)) +
+  geom_bar(aes(x=country, y=log(ed)), fill=colors[5], stat="identity") +
+  labs(x="Country", y="LOG Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom") +
+  ggtitle("2010-2019 - Eating disorders")
+
+pdf(file=here("images","prevalence_by_decade_absolute.pdf"), height=15, width=30)
+plot_grid(a1,a4,a7,a10,a13,a2,a5,a8,a11,a14,a3,a6,a9,a12,a15, nrow=3, ncol=5)
+dev.off()

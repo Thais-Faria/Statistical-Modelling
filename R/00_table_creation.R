@@ -6,6 +6,8 @@ library(here)
 
 ##### PER COUNTRY #####
 
+## RELATIVE
+
 # Get raw data
 
 # disorder prevalence dataset
@@ -77,6 +79,67 @@ prevalence_gini_intersection <- prevalence_gini_intersection[-1,] # done!
 # Saving this table
 
 write.table(prevalence_gini_intersection, file=here("data", "processed", "relative_world_prevalence_with_gini.txt"), sep="\t", row.names=F)
+
+
+
+## ABSOLUTE
+
+library(here)
+
+# Get processed relative data
+
+relative_gini <- read.table(here("data","processed","relative_world_prevalence_with_gini.txt"), sep="\t", header=T)
+
+# Get raw population data
+
+worldbank_1 <- read.csv(here("data","raw","worldbank","WDICSV.csv"), sep=",", header=T)
+
+pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),] # only population data
+
+pop <- pop[which(pop$Country.Name %in% relative_gini$country),] # only population data for the countries we have in gini
+
+# Create data frame to store the information
+
+absolute_gini <- relative_gini
+
+# Retrieve population data
+
+for(j in 1:length(pop$Country.Name)){
+  a <- relative_gini[(grep(pop$Country.Name[j], relative_gini$country)),]
+  b <- pop[j,]
+  year <- a$year
+  c <- colnames(b)
+  c <- sub("X", "", c)
+  colnames(b) <- c
+  b <- b[,c(1,which(c %in% year))]
+
+  for(i in 2:length(colnames(b))){
+    a$schizophrenia[which(a$year == colnames(b)[i])] <- as.numeric(a$schizophrenia[which(a$year == colnames(b)[i])]*b[i])
+    a$depression[which(a$year == colnames(b)[i])] <- as.numeric(a$depression[which(a$year == colnames(b)[i])]*b[i])
+    a$anxiety[which(a$year == colnames(b)[i])] <- as.numeric(a$anxiety[which(a$year == colnames(b)[i])]*b[i])
+    a$bipolar[which(a$year == colnames(b)[i])] <- as.numeric(a$bipolar[which(a$year == colnames(b)[i])]*b[i])
+    a$ed[which(a$year == colnames(b)[i])] <- as.numeric(a$ed[which(a$year == colnames(b)[i])]*b[i])
+  }
+  
+  absolute_gini[(grep(pop$Country.Name[j], relative_gini$country)),] <- a
+
+}
+
+# Remove points without population data
+
+absolute_gini <- absolute_gini[-which(absolute_gini$schizophrenia < 1),]
+
+# Save this data
+
+write.table(absolute_gini, file=here("data", "processed", "absolute_world_prevalence_with_gini.txt"), sep="\t", row.names=F)
+
+
+
+
+
+
+
+
 
 
 

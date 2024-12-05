@@ -1,23 +1,32 @@
 ---
-title: "QUESTION: Is the prevalence of mental disorders in the Brazilian population caused by social inequality?"
+title: "QUESTION: Is the prevalence of mental disorders in the world population caused by social inequality?"
 output: html_document
 ---
 
 # TO-DO
 
--   [ ] Remake table per country, not a time series - REMOVE CONTINENTS
--   [ ] Split the data by decade, treating each decade as a replica per country
-    -   [ ] Fazer a média por década - usar a função eta?
-    -   [ ] Adapt function eta
-    -   [ ] Fazer teste de normalidade nos dados das décadas (gráfico)
-- [ ] Fazer a correlação entre os transtornos
+-   [ ] Fazer teste de normalidade nos dados das décadas (gráfico)
+-   [ ] Fazer a correlação entre os transtornos
 -   [ ] Em cada país, a gente vai medir a causalidade entre uma métrica de desigualdade (Gini) e a incidência de transtornos mentais
-    -   Usar todos os transtornos ou selecionar alguns?
+    -   Usar todos os transtornos ou selecionar alguns? - *Todos*
     -   Se a gente usar todos os transtornos, podemos avaliar também a causalidade entre predisposição genética e transtornos, porque esperamos que populações diferentes tenham prevalência diferente de transtornos mentais (e também esperaremos que populações mais homogêneas tenham uma relação de causalidade mais forte entre predisposição genética e transtornos mentais)
         - Migração afeta a predisposição genética em países menores -> viés
--   [ ] Refazer DAG
 -   [ ] DHARMa para avaliar a autocorrelação temporal entre os dados - o DHARMa permite fazer análises de autocorrelação temporal usando os resíduos
 - TESTAR CAUSALIDADE APENAS ENTRE DESIGUALDADE E PREDISPOSIÇÃO E OS TRANSTORNOS. Deixar a causalidade entre os transtornos para os resíduos?
+
+# DONE
+
+-   [X] Refazer DAG (T)
+-   [X] Remake table per country, not a time series - REMOVE CONTINENTS (M)
+-   [X] Split the data by decade, treating each decade as a replica per country (M)
+    -   [X] Fazer a média por década - usar a função eta? (M)
+    -   [X] Adapt function eta (M)
+-   [x] Retrieve population data for each country (M)
+-   [x] Make absolute population table per country (M)
+    - Some countries were removed (no population data)
+    
+
+
 
 # HIPÓTESES
 
