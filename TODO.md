@@ -9,7 +9,6 @@ output: html_document
 =======
 -   [ ] Retrieve population data for each country
 -   [ ] Make absolute population table per country
->>>>>>> a252ff66aef63649277944dd25fbc8221230f728
 -   [ ] Fazer teste de normalidade nos dados das décadas (gráfico)
 -   [ ] Fazer a correlação entre os transtornos
 -   [ ] Em cada país, a gente vai medir a causalidade entre uma métrica de desigualdade (Gini) e a incidência de transtornos mentais
@@ -26,12 +25,10 @@ output: html_document
 -   [X] Split the data by decade, treating each decade as a replica per country (M)
     -   [X] Fazer a média por década - usar a função eta? (M)
     -   [X] Adapt function eta (M)
-<<<<<<< HEAD
 -   [x] Retrieve population data for each country (M)
 -   [x] Make absolute population table per country (M)
     - Some countries were removed (no population data)
-=======
->>>>>>> a252ff66aef63649277944dd25fbc8221230f728
+
     
 
 
