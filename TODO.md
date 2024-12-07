@@ -5,9 +5,7 @@ output: html_document
 
 # TO-DO
 
-=======
--   [ ] Retrieve population data for each country
--   [ ] Make absolute population table per country
+
 -   [ ] Fazer teste de normalidade nos dados das décadas (gráfico)
 -   [ ] Fazer a correlação entre os transtornos
 -   [ ] Em cada país, a gente vai medir a causalidade entre uma métrica de desigualdade (Gini) e a incidência de transtornos mentais
