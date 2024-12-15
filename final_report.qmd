@@ -1,7 +1,7 @@
 ---
 title: "Relatório Final"
 author: "Meari Caldeira & Thaís G. P. Faria"
-format: html
+format: pdf
 editor: source
 bibliography: references.bib
 ---
@@ -24,13 +24,251 @@ bibliography: references.bib
 
 ### Pacotes necessários
 
--   O pacote `here` [@here] é usado para facilitar a reproducibilidade do script em diferentes sistemas operacionais, e o pacote `dplyer` [@dplyr] faz parte do framework Tidyverse [@tidyverse], usado para algumas operações de limpeza e combinação de dados. Para a visualização dos dados, são usados os pacotes ggplot2 [@ggplot2] e cowplot (citação).
+O pacote `here` [@here] é usado para facilitar a reproducibilidade do script em diferentes sistemas operacionais fazendo uso do arquivo .RProj na raiz do diretório do projeto. O pacote `dplyer` [@dplyr] faz parte do framework Tidyverse [@tidyverse], usado para algumas operações de limpeza e combinação de dados em conjunto com funções nativas da linguagem de programação R [@base]. Já para a visualização dos dados, são usados os pacotes `ggplot2` [@ggplot2], `scales` [@scales] e `patchwork` [@patchwork].
+
+```{r}
+# Carregando pacotes
+library(here)
+library(ggplot2)
+library(scales)
+library(patchwork)
+```
 
 ### Dados
 
--   Descrição básica e fonte de cada um
--   Preparação da tabela de análise
--   Estatística descritiva da tabela
+#### Incidência de Transtornos Mentais
+
+Os dados principais sobre incidência de transtornos mentais na população foram baixados da plataforma Kaggle, que disponibiliza conjuntos de dados para projetos de ciência de dados, e podem ser baixados através deste [link](https://www.kaggle.com/datasets/imtkaggleteam/mental-health). Por sua vez, os dados baixados do Kaggle foram compilados da literatura pelo Institute for Health Metrics and Evaluation (IHME)[@ihme], associado à University of Washington School of Medicine, e limpos e processados pela equipe do website Our World In Data @owid-mental-health . Ele apresenta dados de prevalência de transtornos mentais (ansiedade, depressão, transtornos alimentares, esquizofrenia e transtorno bipolar) em 214 países de 1990 a 2019.
+
+Vamos primeiro carregar os dados:
+
+```{r}
+# Leitura dos dados de prevalência
+prevalence <- read.csv(here("data",
+                            "raw",
+                            "1-mental-illnesses-prevalence.csv"), 
+                       header=T, sep=",")
+```
+
+A tabela de dados brutos inclui alguns dados atribuídos a conjuntos de países, como "European Union" ou "High-income countries". Vamos filtrar a tabela para considerar apenas os países individuais:
+
+```{r}
+countries <- unique(prevalence$Entity)
+countries <- countries[-c(2,5,12,66,67,85,109,112,205,211)]
+
+prevalence_by_country <- prevalence[which(prevalence$Entity %in% countries==T),]
+```
+
+Vamos combinar esses dados com o Índice de GINI à seguir.
+
+#### Índice de GINI
+
+-   O Índice de GINI foi proposto por ... em .... e é atualmente utilizado para quantificar o nível de desigualdade de renda de um país.
+
+Primeiro, vamos carregar os dados:
+
+```{r}
+gini <- read.csv(here("data",
+                      "raw",
+                      "economic-inequality-gini-index.csv"), 
+                 header=T, sep=",")
+```
+
+Agora vamos criar uma tabela combinando os dados de prevalência de transtornos mentais e o Índice de GINI. Vamos primeiro encontrar os países que constam tanto na tabela de prevalência quanto na tabela do GINI e criar uma base para a tabela `prevalence_with_gini`:
+
+```{r}
+#
+prevalence_with_gini <- data.frame(
+  country=prevalence_by_country$Entity,
+  year=prevalence_by_country[,3],
+  schizophrenia=prevalence_by_country[,4],
+  depression=prevalence_by_country[,5],
+  anxiety=prevalence_by_country[,6],
+  bipolar=prevalence_by_country[,7],
+  ed=prevalence_by_country[,8],
+  gini=rep(NA,length(prevalence_by_country$Entity))
+)
+
+countries_gini <- unique(gini$Entity)
+
+prevalence_with_gini <- prevalence_with_gini[which(prevalence_with_gini$country %in% countries_gini),]
+
+countries_prevalence <- unique(prevalence_with_gini$country)
+```
+
+Agora vamos combinar as tabelas com um `for loop`
+
+-   **PEDIR EXPLICAÇÃO BÁSICA SOBRE ESSE LOOP**
+
+```{r}
+prevalence_gini_intersection <- data.frame(
+  country=NA,
+  year=NA,
+  schizophrenia=NA,
+  depression=NA,
+  anxiety=NA,
+  bipolar=NA,
+  ed=NA,
+  gini=NA
+)
+
+for(i in 1:length(countries_prevalence)){
+  
+  b <- gini[which(gini$Entity==countries_prevalence[1]),]
+  
+  a <- prevalence_with_gini[which(prevalence_with_gini$country==countries_prevalence[i]),]
+  
+  a <- a[which((a$year) %in% gini$Year[which(gini$Entity==countries_prevalence[i])]),]
+  
+  b <- b[b$Year %in% a$year,]
+  
+  a$gini <- b[which(b$Entity==countries_prevalence[i]),4]
+  
+  prevalence_gini_intersection <- rbind(prevalence_gini_intersection, a)
+
+}
+
+prevalence_gini_intersection <- prevalence_gini_intersection[-1,]
+```
+
+O código a seguir pode ser usado para salvar a tabela construída até o momento, e para carregá-la novamente quando necessário:
+
+```{r}
+write.table(prevalence_gini_intersection,
+            file = here("data",
+                        "processed",
+                        "relative_world_prevalence_with_gini.txt"),
+            sep="\t",
+            row.names=F)
+
+relative_gini <- read.table(here("data",
+                                 "processed",
+                                 "relative_world_prevalence_with_gini.txt"),
+                            sep="\t",
+                            header=T)
+```
+
+A tabela a combinada é composta pelos dados de prevalência dos transtornos mentais por país, por ano, em porcentagem, mas é mais fácil ter uma ideia inicial dos padrões dos dados através de gráficos, então vamos fazer um combinando os dados de todos os países:
+
+```{r}
+relative_gini$year <- as.factor(relative_gini$year)  
+
+ggplot(relative_gini) +
+  geom_bar(aes(x=year, y=anxiety, fill="Anxiety"), stat="identity") +
+  geom_bar(aes(x=year, y=depression, fill="Depression"), stat="identity") +
+  geom_bar(aes(x=year, y=bipolar, fill="Bipolar"), stat="identity") +
+  geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
+  geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
+  labs(x="Year", y="Prevalence (relative)", fill="Disorders") +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+Considerando os dados de todos os países juntos por ano, podemos observar que depressão é o transtorno mental com a maior prevalência durante todo o período analisado, enquanto ansiedade é o segundo transtorno com maior prevalência pelo menos desde 2006. Por outro lado, esquizofrenia e transtornos alimentares consistentemente têm as menores prevalências. No entanto, os modelos estatísticos utilizados nas próximas análises requerem dados de contagem absoluta da população, então vamos utilizá-los nas próximas etapas da construção dos dados finais.
+
+#### Dados de população absoluta
+
+-   Descrição de dados da população mundial
+
+-   **LEMBRAR DE COLOCAR A TABELA DE POPULAÇÃO MUNDIAL NO GITHUB**
+
+Vamos primeiro ler os dados e filtrar os países para os quais temos o Índice de GINI
+
+```{r}
+worldbank_1 <- read.csv(here("data",
+                             "raw",
+                             "worldbank",
+                             "WDICSV.csv"), 
+                        sep=",", 
+                        header=T)
+
+# Coluna com população total
+pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),] 
+
+# Seleção dos países com Índice de GINI
+pop <- pop[which(pop$Country.Name %in% relative_gini$country),] 
+```
+
+Agora vamos transformar os dados de prevalência em porcentagem em dados de contagem populacional para facilitar a modelagem estatística:
+
+-   **PEDIR EXPLICAÇÃO BÁSICA SOBRE O FOR LOOP**
+
+```{r}
+# Criando uma nova tabela para os dados absolutos
+absolute_gini <- relative_gini
+
+# For Loop
+for(j in 1:length(pop$Country.Name)){
+  a <- relative_gini[(grep(pop$Country.Name[j], relative_gini$country)),]
+  b <- pop[j,]
+  year <- a$year
+  c <- colnames(b)
+  c <- sub("X", "", c)
+  colnames(b) <- c
+  b <- b[,c(1,which(c %in% year))]
+
+  for(i in 2:length(colnames(b))){
+    a$schizophrenia[which(a$year == colnames(b)[i])] <- as.numeric(a$schizophrenia[which(a$year == colnames(b)[i])]*b[i])
+    a$depression[which(a$year == colnames(b)[i])] <- as.numeric(a$depression[which(a$year == colnames(b)[i])]*b[i])
+    a$anxiety[which(a$year == colnames(b)[i])] <- as.numeric(a$anxiety[which(a$year == colnames(b)[i])]*b[i])
+    a$bipolar[which(a$year == colnames(b)[i])] <- as.numeric(a$bipolar[which(a$year == colnames(b)[i])]*b[i])
+    a$ed[which(a$year == colnames(b)[i])] <- as.numeric(a$ed[which(a$year == colnames(b)[i])]*b[i])
+  }
+  
+  absolute_gini[(grep(pop$Country.Name[j], relative_gini$country)),] <- a
+
+}
+
+# Removendo linhas sem dados populacionais
+absolute_gini <- absolute_gini[-which(absolute_gini$schizophrenia < 1),]
+```
+
+O código à seguir pode ser usado para salvar a tabela com os dados de população absoluta:
+
+```{r}
+write.table(absolute_gini, 
+            file=here("data", 
+                      "processed", 
+                      "absolute_world_prevalence_with_gini.txt"), 
+            sep="\t", 
+            row.names=F)
+
+absolute_gini <- read.table(here("data", 
+                                 "processed", 
+                                 "absolute_world_prevalence_with_gini.txt"), 
+                            header=T, 
+                            sep="\t")
+```
+
+-   **perguntar sobre dados serem salvos em txt em vez de csv**
+
+Vamos agora fazer um novo gráfico para comparar os dados relativos com os dados absolutos:
+
+```{r}
+#| fig-height: 9
+#| fig-width: 8
+
+absolute_gini$year <- as.factor(absolute_gini$year)  
+
+(ggplot(relative_gini) +
+  geom_bar(aes(x=year, y=anxiety, fill="Anxiety"), stat="identity") +
+  geom_bar(aes(x=year, y=depression, fill="Depression"), stat="identity") +
+  geom_bar(aes(x=year, y=bipolar, fill="Bipolar"), stat="identity") +
+  geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
+  geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
+  labs(x="Year", y="Prevalence (relative)", fill="Disorders") +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))/
+(ggplot(absolute_gini) +
+  geom_bar(aes(x=year, y=anxiety, fill="Anxiety"), stat="identity") +
+  geom_bar(aes(x=year, y=depression, fill="Depression"), stat="identity") +
+  geom_bar(aes(x=year, y=bipolar, fill="Bipolar"), stat="identity") +
+  geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
+  geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
+  labs(x="Year", y="Prevalence (absolute)", fill="Disorders") +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
+```
 
 ### Ajuste de modelos e diagnóstico
 
