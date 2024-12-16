@@ -12,7 +12,7 @@ base.pop <- seq(3000, 10000, 200)
 anos <- 1:length(base.pop)
 
 #Adicionando ruído (normal) na população. Na vida real o ruído teria auto-correlação temporal
-pop.count <- base.pop + floor(rnorm(max(anos)) * 1000) 
+pop.count <- base.pop + floor(rnorm(max(anos)) * 1000)
 
 model.base.pop <- lm(base.pop ~ anos) #modelo da população base
 plot(x = anos, y = base.pop)
@@ -61,11 +61,11 @@ ggplot(dataset) +
 
 glm.pois <- glm(pop.illness ~ gini.float,
                 family = poisson(link = "log"),
-                data = data)
+                data = dataset)
 
 glm.bin <- glm(cbind(pop.illness, pop.count - pop.illness) ~ gini.float,
                family=binomial(link="logit"),
-               data = data)
+               data = dataset)
 
 logLik(glm.pois)
 logLik(glm.bin)
