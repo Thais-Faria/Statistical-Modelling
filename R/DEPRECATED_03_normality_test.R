@@ -145,3 +145,18 @@ qqPlot(time_series$Belize$ed, main="Eating disorders")
 
 normality[which(normality$country=="Belize"),2] <- "yes"
 
+# Benin
+
+par(mfrow=c(3,2))
+qqPlot(time_series$Benin$schizophrenia, main="Schizophrenia")
+qqPlot(time_series$Benin$depression, main='Depression')
+qqPlot(time_series$Benin$anxiety, main="Anxiety")
+qqPlot(time_series$Benin$bipolar, main="Bipolar")
+qqPlot(time_series$Benin$ed, main="Eating disorders")
+
+normality[which(normality$country=="Benin"),2] <- "yes"
+
+# Bhutan
+
+# Bolivia
+
