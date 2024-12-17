@@ -107,17 +107,37 @@ dev.off()
 
 plots <- matrix(c(1,1,2,3,4,5), ncol=2, byrow=T)
 
-png(filename=here("images","linear_schizo_tempo.png"))
+png(filename=here("images","models","NOLOG_NOROUND_linear_schizo_tempo.png"))
 layout(plots)
 plot.new()
-legend("center",paste("Modelo linear esquizofrenia (tempo)"), cex=3, bty="n")
+legend("center",paste("Linear esquizofrenia (tempo) (NO LOG)"), cex=2, bty="n")
 plot(glm.linear.year)
-#dev.off()
+dev.off()
 
+png(filename=here("images","models","NOLOG_NOROUND_poisson_schizo_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson esquizofrenia (tempo) (NO LOG)"), cex=2, bty="n")
+plot(glm.pois.year)
+dev.off()
+
+png(filename=here("images","models","NOLOG_NOROUND_binom_schizo_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial esquizofrenia (tempo) (NO LOG)"), cex=2, bty="n")
+plot(glm.bin.year)
+dev.off()
+
+png(filename=here("images","models","NOLOG_NOROUND_linear_schizo_tempo_dharma.png"))
 sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
 plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","NOLOG_NOROUND_poisson_schizo_tempo_dharma.png"))
 sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
 plot(sim_res_pois)
+dev.off()
+
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
 
