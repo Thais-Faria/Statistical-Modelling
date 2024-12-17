@@ -107,39 +107,41 @@ dev.off()
 
 plots <- matrix(c(1,1,2,3,4,5), ncol=2, byrow=T)
 
-png(filename=here("images","models","NOLOG_NOROUND_linear_schizo_tempo.png"))
+png(filename=here("images","models","schizo_linear_tempo.png"))
 layout(plots)
 plot.new()
-legend("center",paste("Linear esquizofrenia (tempo) (NO LOG)"), cex=2, bty="n")
+legend("center",paste("Linear esquizofrenia (tempo)"), cex=2, bty="n")
 plot(glm.linear.year)
 dev.off()
 
-png(filename=here("images","models","NOLOG_NOROUND_poisson_schizo_tempo.png"))
+png(filename=here("images","models","schizo_poisson_tempo.png"))
 layout(plots)
 plot.new()
-legend("center",paste("Poisson esquizofrenia (tempo) (NO LOG)"), cex=2, bty="n")
+legend("center",paste("Poisson esquizofrenia (tempo)"), cex=2, bty="n")
 plot(glm.pois.year)
 dev.off()
 
-png(filename=here("images","models","NOLOG_NOROUND_binom_schizo_tempo.png"))
+png(filename=here("images","models","schizo_binomial_tempo.png"))
 layout(plots)
 plot.new()
-legend("center",paste("Binomial esquizofrenia (tempo) (NO LOG)"), cex=2, bty="n")
+legend("center",paste("Binomial esquizofrenia (tempo)"), cex=2, bty="n")
 plot(glm.bin.year)
 dev.off()
 
-png(filename=here("images","models","NOLOG_NOROUND_linear_schizo_tempo_dharma.png"))
+png(filename=here("images","models","schizo_linear_tempo_dharma.png"))
 sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
 plot(sim_res_lm)
 dev.off()
 
-png(filename=here("images","models","NOLOG_NOROUND_poisson_schizo_tempo_dharma.png"))
+png(filename=here("images","models","schizo_poisson_tempo_dharma.png"))
 sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
 plot(sim_res_pois)
 dev.off()
 
+png(filename=here("images","models","schizo_binomial_tempo_dharma.png"))
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
+dev.off()
 
 
 
@@ -181,6 +183,43 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
 plot(sim_res_bin)
 
+
+png(filename=here("images","models","schizo_linear_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear esquizofrenia (gini)"), cex=2, bty="n")
+plot(glm.linear.gini)
+dev.off()
+
+png(filename=here("images","models","schizo_poisson_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson esquizofrenia (gini)"), cex=2, bty="n")
+plot(glm.pois.gini)
+dev.off()
+
+png(filename=here("images","models","schizo_binomial_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial esquizofrenia (gini)"), cex=2, bty="n")
+plot(glm.bin.gini)
+dev.off()
+
+png(filename=here("images","models","schizo_linear_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","schizo_poisson_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","schizo_binomial_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
+plot(sim_res_bin)
+dev.off()
+
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY ####
 
 glm.linear.country <- lm(schizophrenia ~ decade + country,
@@ -218,6 +257,42 @@ sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
 plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
 plot(sim_res_bin)
+
+png(filename=here("images","models","schizo_linear_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear esquizofrenia (country)"), cex=2, bty="n")
+plot(glm.linear.country)
+dev.off()
+
+png(filename=here("images","models","schizo_poisson_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson esquizofrenia (country)"), cex=2, bty="n")
+plot(glm.pois.country)
+dev.off()
+
+png(filename=here("images","models","schizo_binomial_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial esquizofrenia (country)"), cex=2, bty="n")
+plot(glm.bin.country)
+dev.off()
+
+png(filename=here("images","models","schizo_linear_country_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","schizo_poisson_country_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","schizo_binomial_country_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
+plot(sim_res_bin)
+dev.off()
 
 
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY AND GINI ####
@@ -258,7 +333,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
 plot(sim_res_bin)
 
+png(filename=here("images","models","schizo_linear_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear esquizofrenia (country + gini)"), cex=2, bty="n")
+plot(glm.linear.country.gini)
+dev.off()
 
+png(filename=here("images","models","schizo_poisson_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson esquizofrenia (country + gini)"), cex=2, bty="n")
+plot(glm.pois.country.gini)
+dev.off()
+
+png(filename=here("images","models","schizo_binomial_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial esquizofrenia (country + gini)"), cex=2, bty="n")
+plot(glm.bin.country.gini)
+dev.off()
+
+png(filename=here("images","models","schizo_linear_country_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","schizo_poisson_country_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","schizo_binomial_country_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+dev.off()
 
 
 ##############################
@@ -303,7 +412,43 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
 
+plots <- matrix(c(1,1,2,3,4,5), ncol=2, byrow=T)
 
+png(filename=here("images","models","depression_linear_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear depressão (tempo)"), cex=2, bty="n")
+plot(glm.linear.year)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson depressão (tempo)"), cex=2, bty="n")
+plot(glm.pois.year)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial depressão (tempo)"), cex=2, bty="n")
+plot(glm.bin.year)
+dev.off()
+
+png(filename=here("images","models","depression_linear_tempo_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_tempo_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_tempo_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
+plot(sim_res_bin)
+dev.off()
 
 #### WITH GINI ####
 
@@ -343,6 +488,42 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
 plot(sim_res_bin)
 
+png(filename=here("images","models","depression_linear_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear depressão (gini)"), cex=2, bty="n")
+plot(glm.linear.gini)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson depressão (gini)"), cex=2, bty="n")
+plot(glm.pois.gini)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial depressão (gini)"), cex=2, bty="n")
+plot(glm.bin.gini)
+dev.off()
+
+png(filename=here("images","models","depression_linear_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
+plot(sim_res_bin)
+dev.off()
+
 
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY ####
 
@@ -381,6 +562,116 @@ sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
 plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
 plot(sim_res_bin)
+
+png(filename=here("images","models","depression_linear_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear depressão (country)"), cex=2, bty="n")
+plot(glm.linear.country)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson depressão (country)"), cex=2, bty="n")
+plot(glm.pois.country)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial depressão (country)"), cex=2, bty="n")
+plot(glm.bin.country)
+dev.off()
+
+png(filename=here("images","models","depression_linear_country_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_country_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_country_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
+plot(sim_res_bin)
+dev.off()
+
+#### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY AND GINI ####
+
+glm.linear.country.gini <- lm(depression ~ decade + country + gini,
+                              data=abs_decades)
+
+glm.pois.country.gini <- glm(depression ~ decade + country + gini,
+                             data=abs_decades,
+                             family=poisson(link="log"))
+
+glm.bin.country.gini <- glm(cbind(depression,pop) ~ decade + country + gini,
+                            data=abs_decades,
+                            family=binomial(link="logit"))
+
+logLik(glm.linear.country.gini)
+logLik(glm.pois.country.gini)
+logLik(glm.bin.country.gini)
+
+AIC(glm.linear.country.gini)
+AIC(glm.pois.country.gini)
+AIC(glm.bin.country.gini)
+
+coef(glm.linear.country.gini)
+coef(glm.pois.country.gini)
+coef(glm.bin.country.gini)
+
+par(mfrow=c(2,2))
+plot(glm.linear.country.gini)
+plot(glm.pois.country.gini)
+plot(glm.bin.country.gini)
+dev.off() 
+
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+
+png(filename=here("images","models","depression_linear_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear depressão (country + gini)"), cex=2, bty="n")
+plot(glm.linear.country.gini)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson depressão (country + gini)"), cex=2, bty="n")
+plot(glm.pois.country.gini)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial depressão (country + gini)"), cex=2, bty="n")
+plot(glm.bin.country.gini)
+dev.off()
+
+png(filename=here("images","models","depression_linear_country_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","depression_poisson_country_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","depression_binomial_country_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+dev.off()
 
 ##############################
 # ANXIETY
@@ -424,6 +715,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
 
+png(filename=here("images","models","anxiety_linear_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ansiedade (tempo)"), cex=2, bty="n")
+plot(glm.linear.year)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ansiedade (tempo)"), cex=2, bty="n")
+plot(glm.pois.year)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ansiedade (tempo)"), cex=2, bty="n")
+plot(glm.bin.year)
+dev.off()
+
+png(filename=here("images","models","anxiety_linear_tempo_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_tempo_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_tempo_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
+plot(sim_res_bin)
+dev.off()
 
 
 #### WITH GINI ####
@@ -464,6 +790,42 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
 plot(sim_res_bin)
 
+png(filename=here("images","models","anxiety_linear_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ansiedade (gini)"), cex=2, bty="n")
+plot(glm.linear.gini)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ansiedade (gini)"), cex=2, bty="n")
+plot(glm.pois.gini)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ansiedade (gini)"), cex=2, bty="n")
+plot(glm.bin.gini)
+dev.off()
+
+png(filename=here("images","models","anxiety_linear_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
+plot(sim_res_bin)
+dev.off()
+
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY ####
 
 glm.linear.country <- lm(anxiety ~ decade + country,
@@ -502,6 +864,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
 plot(sim_res_bin)
 
+png(filename=here("images","models","anxiety_linear_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ansiedade (country)"), cex=2, bty="n")
+plot(glm.linear.country)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ansiedade (country)"), cex=2, bty="n")
+plot(glm.pois.country)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ansiedade (country)"), cex=2, bty="n")
+plot(glm.bin.country)
+dev.off()
+
+png(filename=here("images","models","anxiety_linear_country_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_country_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_country_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
+plot(sim_res_bin)
+dev.off()
 
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY AND GINI ####
 
@@ -540,6 +937,42 @@ sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
 plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
 plot(sim_res_bin)
+
+png(filename=here("images","models","anxiety_linear_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ansiedade (country + gini)"), cex=2, bty="n")
+plot(glm.linear.country.gini)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ansiedade (country + gini)"), cex=2, bty="n")
+plot(glm.pois.country.gini)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ansiedade (country + gini)"), cex=2, bty="n")
+plot(glm.bin.country.gini)
+dev.off()
+
+png(filename=here("images","models","anxiety_linear_country_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","anxiety_poisson_country_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","anxiety_binomial_country_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+dev.off()
 
 ##############################
 # BIPOLAR
@@ -583,7 +1016,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
 
+png(filename=here("images","models","bipolar_linear_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear bipolar (tempo)"), cex=2, bty="n")
+plot(glm.linear.year)
+dev.off()
 
+png(filename=here("images","models","bipolar_poisson_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson bipolar (tempo)"), cex=2, bty="n")
+plot(glm.pois.year)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial bipolar (tempo)"), cex=2, bty="n")
+plot(glm.bin.year)
+dev.off()
+
+png(filename=here("images","models","bipolar_linear_tempo_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_tempo_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_tempo_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
+plot(sim_res_bin)
+dev.off()
 
 #### WITH GINI ####
 
@@ -623,6 +1090,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
 plot(sim_res_bin)
 
+png(filename=here("images","models","bipolar_linear_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear bipolar (gini)"), cex=2, bty="n")
+plot(glm.linear.gini)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson bipolar (gini)"), cex=2, bty="n")
+plot(glm.pois.gini)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial bipolar (gini)"), cex=2, bty="n")
+plot(glm.bin.gini)
+dev.off()
+
+png(filename=here("images","models","bipolar_linear_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
+plot(sim_res_bin)
+dev.off()
 
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY ####
 
@@ -662,6 +1164,42 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
 plot(sim_res_bin)
 
+png(filename=here("images","models","bipolar_linear_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear bipolar (country)"), cex=2, bty="n")
+plot(glm.linear.country)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson bipolar (country)"), cex=2, bty="n")
+plot(glm.pois.country)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial bipolar (country)"), cex=2, bty="n")
+plot(glm.bin.country)
+dev.off()
+
+png(filename=here("images","models","bipolar_linear_country_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_country_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_country_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
+plot(sim_res_bin)
+dev.off()
+
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY AND GINI ####
 
 glm.linear.country.gini <- lm(bipolar ~ decade + country + gini,
@@ -699,6 +1237,42 @@ sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
 plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
 plot(sim_res_bin)
+
+png(filename=here("images","models","bipolar_linear_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear bipolar (country + gini)"), cex=2, bty="n")
+plot(glm.linear.country.gini)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson bipolar (country + gini)"), cex=2, bty="n")
+plot(glm.pois.country.gini)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial bipolar (country + gini)"), cex=2, bty="n")
+plot(glm.bin.country.gini)
+dev.off()
+
+png(filename=here("images","models","bipolar_linear_country_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","bipolar_poisson_country_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","bipolar_binomial_country_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+dev.off()
 
 ##############################
 # ED
@@ -742,7 +1316,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
 
+png(filename=here("images","models","ed_linear_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ed (tempo)"), cex=2, bty="n")
+plot(glm.linear.year)
+dev.off()
 
+png(filename=here("images","models","ed_poisson_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ed (tempo)"), cex=2, bty="n")
+plot(glm.pois.year)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ed (tempo)"), cex=2, bty="n")
+plot(glm.bin.year)
+dev.off()
+
+png(filename=here("images","models","ed_linear_tempo_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_tempo_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_tempo_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
+plot(sim_res_bin)
+dev.off()
 
 #### WITH GINI ####
 
@@ -782,6 +1390,41 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
 plot(sim_res_bin)
 
+png(filename=here("images","models","ed_linear_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ed (gini)"), cex=2, bty="n")
+plot(glm.linear.gini)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ed (gini)"), cex=2, bty="n")
+plot(glm.pois.gini)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ed (gini)"), cex=2, bty="n")
+plot(glm.bin.gini)
+dev.off()
+
+png(filename=here("images","models","ed_linear_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
+plot(sim_res_bin)
+dev.off()
 
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY ####
 
@@ -821,6 +1464,42 @@ plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
 plot(sim_res_bin)
 
+png(filename=here("images","models","ed_linear_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ed (country)"), cex=2, bty="n")
+plot(glm.linear.country)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ed (country)"), cex=2, bty="n")
+plot(glm.pois.country)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_country.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ed (country)"), cex=2, bty="n")
+plot(glm.bin.country)
+dev.off()
+
+png(filename=here("images","models","ed_linear_country_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_country_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_country_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
+plot(sim_res_bin)
+dev.off()
+
 #### WITH COUNTRY AS PROXY FOR GENETIC HOMOGENEITY AND GINI ####
 
 glm.linear.country.gini <- lm(ed ~ decade + country + gini,
@@ -858,6 +1537,42 @@ sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
 plot(sim_res_pois)
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
 plot(sim_res_bin)
+
+png(filename=here("images","models","ed_linear_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Linear ed (country + gini)"), cex=2, bty="n")
+plot(glm.linear.country.gini)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Poisson ed (country + gini)"), cex=2, bty="n")
+plot(glm.pois.country.gini)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_country_gini.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Binomial ed (country + gini)"), cex=2, bty="n")
+plot(glm.bin.country.gini)
+dev.off()
+
+png(filename=here("images","models","ed_linear_country_gini_dharma.png"))
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+dev.off()
+
+png(filename=here("images","models","ed_poisson_country_gini_dharma.png"))
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+dev.off()
+
+png(filename=here("images","models","ed_binomial_country_gini_dharma.png"))
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+dev.off()
 
 #
 
