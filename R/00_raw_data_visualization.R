@@ -46,7 +46,7 @@ ggplot(absolute_gini) +
         geom_bar(aes(x=year, y=bipolar, fill="Bipolar"), stat="identity") +
         geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
         geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
-        labs(x="Year", y="Prevalence (relative)", fill="Disorders") +
+        labs(x="Year", y="Prevalence (absolute)", fill="Disorders") +
         theme(legend.position="bottom")
 
 # Saving plot
