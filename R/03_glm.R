@@ -57,6 +57,8 @@ for(i in 1:length(abs_decades$country)){
 
 abs_decades$pop <- log(abs_decades$pop)
 
+abs_decades_raw <- abs_decades
+
 # Rounding everything bcs the counting models cant take decimals
 abs_decades$schizophrenia <- round(abs_decades$schizophrenia)
 abs_decades$depression <- round(abs_decades$depression)
@@ -102,6 +104,15 @@ plot(glm.linear.year)
 plot(glm.pois.year)
 plot(glm.bin.year)
 dev.off()
+
+plots <- matrix(c(1,1,2,3,4,5), ncol=2, byrow=T)
+
+png(filename=here("images","linear_schizo_tempo.png"))
+layout(plots)
+plot.new()
+legend("center",paste("Modelo linear esquizofrenia (tempo)"), cex=3, bty="n")
+plot(glm.linear.year)
+#dev.off()
 
 sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
 plot(sim_res_lm)
