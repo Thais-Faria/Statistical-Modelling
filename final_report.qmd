@@ -11,15 +11,21 @@ bibliography: references.bib
 Transtornos mentais impactam negativamente a vida de centenas de milhões de pessoas no mundo todo.
 
 -   
+
 -   Pergunta principal do projeto "A prevalência de doenças mentais da população brasileira está correlacionada com desigualdade social?"
+
 -   Índice de Gini modelado com a Curva de Lorenz Corrado Gini
+
 -   Foco em 5 doenças mentais: Esquizofrenia, Transtorno Bipolar, Transtorno Alimentar, Ansiedade e Depressão
+
     -   Esquizofrenia @Vereczkei_Mirnics_schizophrenia_2011
     -   Transtorno Bipolar @gordovez_genetics_2020
     -   Transtorno Alimentar
     -   Ansiedade
     -   Depressão
+
 -   Hipóteses
+
     -   Dags?
     -   Modelos escolhidos
 

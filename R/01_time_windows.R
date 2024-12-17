@@ -161,7 +161,7 @@ absolute_gini <- read.table(here("data", "processed", "absolute_world_prevalence
 # Creating dataframes to store the decade information
 
 decade1 <- absolute_gini[which(absolute_gini$year < 2000),]
-decade2 <- absolute_gini[which(absolute_gini$year > 1999 & relative_gini$year < 2010),]
+decade2 <- absolute_gini[which(absolute_gini$year > 1999 & absolute_gini$year < 2010),]
 decade3 <- absolute_gini[which(absolute_gini$year > 2009),]
 
 countries <- unique(decade1$country)

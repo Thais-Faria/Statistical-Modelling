@@ -1,0 +1,748 @@
+---
+title: "Relatório Final"
+author: "Meari Caldeira & Thaís G. P. Faria"
+format: pdf
+editor: source
+bibliography: references.bib
+---
+
+# Introdução
+
+Transtornos mentais impactam negativamente a vida de centenas de milhões de pessoas no mundo todo. Muito embora exista uma vasta literatura, principalmente em psiquiatria, sobre as origens e comorbidades dos diferentes transtornos mentais, não há consenso sobre as causas da maioria deles. Sabemos, no entanto (e inclusive por experiência própria), que fatores externos ao indivíduo acometido podem acarretar no desenvolvimento de transtornos mentais, por exemplo, péssimas condições de trabalho e insegurança social, que estão correlacionadas a ansiedade e depressão (@prins_anxious_2015), bem como fatores internos, como predisposição genética (@Vereczkei_Mirnics_schizophrenia_2011, @gordovez_genetics_2020).
+
+Nos perguntamos, então, se transtornos mentais são causados por desigualdade social e/ou predisposição genética. Para responder a essa pergunta, selecionamos cinco transtornos mentais de grande prevalência na população mundial: esquizofrenia, transtorno bipolar, transtornos alimentares, ansiedade e depressão. Esperamos encontrar relação causal entre predisposição genética e todos os transtornos, no entanto, esperamos que ela seja mais forte para esquizofrenia, transtorno bipolar e transtornos alimentares, segundo aponta a literatura (@Vereczkei_Mirnics_schizophrenia_2011, @gordovez_genetics_2020, \@doi:10.1177/2045125318814734, \@https://doi.org/10.1002/ajmg.c.30171), e também porque, como já citado, esperamos que depressão e ansiedade sejam causadas também por fatores socioeconômicos (@prins_anxious_2015). A nível populacional, esperamos também que exista alguma relação entre os transtornos, porque uma maior incidência de transtornos mentais na população pode tanto ser um sintoma de uma má situação social no país, gerando mais transtornos, ou causar problemas a nível individual que podem se traduzir em uma maior incidência de transtornos como ansiedade e depressão a nível populacional.
+
+Usamos como indicador socioeconômico o índice de Gini, que mede a desigualdade social dos países, segundo dados do World Inequality Database, e como indicador de predisposição genética a população de cada país individualmente, embora conheçamos os riscos dessa escolha (veja a discussão mais à frente). Nossa hipótese é de que as relações de causalidade sejam independentes, ou seja, que a desigualdade social e a predisposição genética causem transtornos mentais independentemente uns dos outros, e não levamos em consideração outros fatores que também podem causar esses transtornos a nível populacional, como criminalidade e drogadição. Nosso grafo acíclico direcionado (DAG) de causalidade para o cenário que imaginamos, então, é o seguinte:
+
+![](images/dag%20bolinha.png)
+
+Uma vez que os dados que temos são de prevalência de transtornos mentais em populações, julgamos que os modelos mais apropriados para a situação seriam Poisson e binomial, então vamos testá-los. Também testamos um modelo linear, que é costumeiramente empregado para fazer análises exploratórias.
+
+# Modelagem
+
+## Pacotes necessários
+
+O pacote `here` [@here] é usado para facilitar a reproducibilidade do script em diferentes sistemas operacionais fazendo uso do arquivo .RProj na raiz do diretório do projeto. O pacote `dplyr` [@dplyr] faz parte do framework Tidyverse [@tidyverse], usado para algumas operações de limpeza e combinação de dados em conjunto com funções nativas da linguagem de programação R [@base]. Já para a visualização dos dados, são usados os pacotes `ggplot2` [@ggplot2], `scales` [@scales], `cowplot` [@cowplot] e `patchwork` [@patchwork].
+
+```{r}
+# Carregando pacotes
+library(here)
+library(ggplot2)
+library(scales)
+library(cowplot)
+library(patchwork)
+```
+
+## Dados
+
+### Incidência de Transtornos Mentais
+
+Os dados principais sobre incidência de transtornos mentais na população foram baixados da plataforma Kaggle, que disponibiliza conjuntos de dados para projetos de ciência de dados, e podem ser baixados através deste [link](https://www.kaggle.com/datasets/imtkaggleteam/mental-health). Os dados baixados do Kaggle foram compilados da literatura pelo Institute for Health Metrics and Evaluation (IHME)[@ihme], associado à University of Washington School of Medicine, e limpos e processados pela equipe do website Our World In Data @owid-mental-health . Ele apresenta dados de prevalência de transtornos mentais (ansiedade, depressão, transtornos alimentares, esquizofrenia e transtorno bipolar) em 214 países entre 1990 a 2019.
+
+Vamos primeiro carregar os dados:
+
+```{r}
+# Leitura dos dados de prevalência
+prevalence <- read.csv(here("data",
+                            "raw",
+                            "1-mental-illnesses-prevalence.csv"), 
+                       header=T, sep=",")
+```
+
+A tabela de dados brutos inclui alguns dados atribuídos a conjuntos de países, como "European Union" ou "High-income countries". Vamos filtrar a tabela para considerar apenas os países individuais:
+
+```{r}
+countries <- unique(prevalence$Entity)
+countries <- countries[-c(2,5,12,66,67,85,109,112,205,211)]
+
+prevalence_by_country <- prevalence[which(prevalence$Entity %in% countries==T),]
+```
+
+Vamos combinar esses dados com o Índice de Gini a seguir.
+
+### Índice de Gini
+
+O Índice de Gini foi proposto por Corrado Gini em 1912 no trabalho "Variabilità e Mutabilità" [@ceriani_origins_2012] e é atualmente utilizado para quantificar o nível de desigualdade de renda de um país. Ele expressa a distância esperada ao acaso entre a renda de duas pessoas de uma população relativa à média de renda do país, de forma que valores mais próximos de 0 indicam maior igualdade de renda, e valores próximos de 1 indicam maior desigualdade. Os dados utilizados neste projeto foram obtidos da base [World Inequality Database](https://wid.world/) e processado pelo website Our World In Data, podendo ser acessados através deste [link](https://ourworldindata.org/economic-inequality).
+
+Primeiro, vamos carregar os dados:
+
+```{r}
+gini <- read.csv(here("data",
+                      "raw",
+                      "economic-inequality-gini-index.csv"), 
+                 header=T, sep=",")
+```
+
+Agora vamos criar uma tabela combinando os dados de prevalência de transtornos mentais e o Índice de Gini. Vamos primeiro encontrar os países que constam tanto na tabela de prevalência quanto na tabela do Gini e criar uma base para a tabela `prevalence_with_gini`:
+
+```{r}
+#
+prevalence_with_gini <- data.frame(
+  country=prevalence_by_country$Entity,
+  year=prevalence_by_country[,3],
+  schizophrenia=prevalence_by_country[,4],
+  depression=prevalence_by_country[,5],
+  anxiety=prevalence_by_country[,6],
+  bipolar=prevalence_by_country[,7],
+  ed=prevalence_by_country[,8],
+  gini=rep(NA,length(prevalence_by_country$Entity))
+)
+
+countries_gini <- unique(gini$Entity)
+
+prevalence_with_gini <- prevalence_with_gini[which(prevalence_with_gini$country %in% countries_gini),]
+
+countries_prevalence <- unique(prevalence_with_gini$country)
+```
+
+Agora vamos combinar as tabelas com um `for loop` que itera entre cada país, filtrando os anos que apresentam tanto dados de prevalência quanto dados de Índice de Gini e combinando-os em uma tabela única (`prevalence_gini_intersection`):
+
+```{r}
+prevalence_gini_intersection <- data.frame(
+  country=NA,
+  year=NA,
+  schizophrenia=NA,
+  depression=NA,
+  anxiety=NA,
+  bipolar=NA,
+  ed=NA,
+  gini=NA
+)
+
+for(i in 1:length(countries_prevalence)){
+  
+  b <- gini[which(gini$Entity==countries_prevalence[i]),]
+  
+  a <- prevalence_with_gini[which(prevalence_with_gini$country==countries_prevalence[i]),]
+  
+  a <- a[which((a$year) %in% gini$Year[which(gini$Entity==countries_prevalence[i])]),]
+  
+  b <- b[b$Year %in% a$year,]
+  
+  a$gini <- b[which(b$Entity==countries_prevalence[i]),4]
+  
+  prevalence_gini_intersection <- rbind(prevalence_gini_intersection, a)
+
+}
+
+prevalence_gini_intersection <- prevalence_gini_intersection[-1,]
+```
+
+O código a seguir pode ser usado para salvar a tabela construída até o momento, e para carregá-la novamente quando necessário:
+
+```{r}
+write.table(prevalence_gini_intersection,
+            file = here("data",
+                        "processed",
+                        "relative_world_prevalence_with_gini.txt"),
+            sep="\t",
+            row.names=F)
+
+relative_gini <- read.table(here("data",
+                                 "processed",
+                                 "relative_world_prevalence_with_gini.txt"),
+                            sep="\t",
+                            header=T)
+```
+
+A tabela combinada é composta pelos dados de prevalência dos transtornos mentais por país, por ano, em porcentagem, mas é mais fácil ter uma ideia inicial dos padrões dos dados através de gráficos, então vamos fazer um combinando os dados de todos os países:
+
+```{r}
+relative_gini$year <- as.factor(relative_gini$year)  
+
+ggplot(relative_gini) +
+        geom_bar(aes(x=year, y=anxiety, fill="Anxiety"), stat="identity") +
+        geom_bar(aes(x=year, y=depression, fill="Depression"), stat="identity") +
+        geom_bar(aes(x=year, y=bipolar, fill="Bipolar"), stat="identity") +
+        geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
+        geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
+        labs(x="Year", y="Prevalence (relative)", fill="Disorders") +
+        theme(legend.position="bottom")
+```
+
+![](images/prevalence_by_year_world.png)
+
+Considerando os dados de todos os países juntos por ano, podemos observar que depressão é o transtorno mental com a maior prevalência durante todo o período analisado, enquanto ansiedade é o segundo transtorno com maior prevalência pelo menos desde 2006. Por outro lado, esquizofrenia e transtornos alimentares consistentemente têm as menores prevalências. No entanto, os modelos estatísticos utilizados nas próximas análises requerem dados de contagem absoluta da população, então vamos utilizá-los nas próximas etapas da construção dos dados finais.
+
+### Dados de população absoluta
+
+Os dados foram obtidos da base de dados DataBank, mantida pelo Banco Mundial com dados de censos de de diversas fontes, obtidos principalmente através de programas da ONU. Ele podem ser acessados e baixados através deste [link](https://databank.worldbank.org/source/population-estimates-and-projections#).
+
+Vamos primeiro ler os dados e filtrar os países para os quais temos o Índice de Gini:
+
+```{r}
+worldbank_1 <- read.csv(here("data",
+                             "raw",
+                             "worldbank",
+                             "WDICSV.csv"), 
+                        sep=",", 
+                        header=T)
+
+# Coluna com população total
+pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),] 
+
+# Seleção dos países com Índice de GINI
+pop <- pop[which(pop$Country.Name %in% relative_gini$country),] 
+```
+
+Agora vamos transformar os dados de prevalência em porcentagem de cada transtorno em dados de contagem populacional para permitir a modelagem estatística com modelos de contagem:
+
+```{r}
+# Criando uma nova tabela para os dados absolutos
+absolute_gini <- relative_gini
+
+# For Loop
+for(j in 1:length(pop$Country.Name)){
+  a <- relative_gini[(grep(pop$Country.Name[j], relative_gini$country)),]
+  b <- pop[j,]
+  year <- a$year
+  c <- colnames(b)
+  c <- sub("X", "", c)
+  colnames(b) <- c
+  b <- b[,c(1,which(c %in% year))]
+
+  for(i in 2:length(colnames(b))){
+    a$schizophrenia[which(a$year == colnames(b)[i])] <- as.numeric(a$schizophrenia[which(a$year == colnames(b)[i])]*b[i])
+    a$depression[which(a$year == colnames(b)[i])] <- as.numeric(a$depression[which(a$year == colnames(b)[i])]*b[i])
+    a$anxiety[which(a$year == colnames(b)[i])] <- as.numeric(a$anxiety[which(a$year == colnames(b)[i])]*b[i])
+    a$bipolar[which(a$year == colnames(b)[i])] <- as.numeric(a$bipolar[which(a$year == colnames(b)[i])]*b[i])
+    a$ed[which(a$year == colnames(b)[i])] <- as.numeric(a$ed[which(a$year == colnames(b)[i])]*b[i])
+  }
+  
+  absolute_gini[(grep(pop$Country.Name[j], relative_gini$country)),] <- a
+
+}
+
+# Removendo linhas sem dados populacionais
+absolute_gini <- absolute_gini[-which(absolute_gini$schizophrenia < 1),]
+```
+
+O código a seguir pode ser usado para salvar a tabela com os dados de população absoluta:
+
+```{r}
+write.table(absolute_gini, 
+            file=here("data", 
+                      "processed", 
+                      "absolute_world_prevalence_with_gini.txt"), 
+            sep="\t", 
+            row.names=F)
+
+absolute_gini <- read.table(here("data", 
+                                 "processed", 
+                                 "absolute_world_prevalence_with_gini.txt"), 
+                            header=T, 
+                            sep="\t")
+```
+
+Vamos agora fazer um novo gráfico para comparar os dados relativos com os dados absolutos, considerando todos os países com dados disponíveis juntos:
+
+```{r}
+#| fig-height: 9
+#| fig-width: 8
+
+absolute_gini$year <- as.factor(absolute_gini$year)  
+
+ggplot(absolute_gini) +
+        geom_bar(aes(x=year, y=anxiety, fill="Anxiety"), stat="identity") +
+        geom_bar(aes(x=year, y=depression, fill="Depression"), stat="identity") +
+        geom_bar(aes(x=year, y=bipolar, fill="Bipolar"), stat="identity") +
+        geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
+        geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
+        labs(x="Year", y="Prevalence (relative)", fill="Disorders") +
+        theme(legend.position="bottom")
+```
+
+![](images/prevalence_by_year_world_absolute.png)
+
+O gráfico apresenta algumas colunas maiores que outras, pois nem todos os anos possuem dados de população para todos os países. Por exemplo, não há dados para países populosos, como Bangladesh, no ano de 1994. Essa discrepância não afetará as análises, pois elas serão feitas com a média por país por década. Em relação ao
+
+### Separação dos dados em décadas
+
+Para simplificar nossa análise, que atualmente é composta por 28 pontos por país para cada transtorno (um por ano entre 1991 e 2019), vamos separar nossos dados por década e extrair a média da prevalência de cada transtorno e do índice de Gini dentro da década. Dessa forma, teremos no máximo 3 pontos por país para cada transtorno.
+
+Vamos começar criando três objetos, `decade1,` `decade2` e `decade3`, para guardar nossos dados de cada década, e três objetos análogos para guardar os dados de médias:
+
+```{r}
+decade1 <- absolute_gini[which(absolute_gini$year < 2000),]
+decade2 <- absolute_gini[which(absolute_gini$year > 1999 & absolute_gini$year < 2010),]
+decade3 <- absolute_gini[which(absolute_gini$year > 2009),]
+
+countries <- unique(decade1$country)
+
+decade1_mean <- data.frame(country=rep(NA, length(countries)),
+                           schizophrenia=rep(NA, length(countries)),
+                           depression=rep(NA, length(countries)),
+                           anxiety=rep(NA, length(countries)),
+                           bipolar=rep(NA, length(countries)),
+                           ed=rep(NA, length(countries)),
+                           gini=rep(NA, length(countries))
+)
+
+
+decade2_mean <- data.frame(country=rep(NA, length(countries)),
+                           schizophrenia=rep(NA, length(countries)),
+                           depression=rep(NA, length(countries)),
+                           anxiety=rep(NA, length(countries)),
+                           bipolar=rep(NA, length(countries)),
+                           ed=rep(NA, length(countries)),
+                           gini=rep(NA, length(countries))
+)
+
+
+decade3_mean <- data.frame(country=rep(NA, length(countries)),
+                           schizophrenia=rep(NA, length(countries)),
+                           depression=rep(NA, length(countries)),
+                           anxiety=rep(NA, length(countries)),
+                           bipolar=rep(NA, length(countries)),
+                           ed=rep(NA, length(countries)),
+                           gini=rep(NA, length(countries))
+)
+```
+
+Agora, vamos criar for loops para preencher esses objetos de médias com as médias por década:
+
+```{r}
+for(i in 1:length(countries)){
+  
+  decade1_mean$country[i] <- countries[i]
+  decade1_mean$schizophrenia[i] <- mean(decade1$schizophrenia[which(decade1$country==countries[i])])
+  decade1_mean$depression[i] <- mean(decade1$depression[which(decade1$country==countries[i])])
+  decade1_mean$anxiety[i] <- mean(decade1$anxiety[which(decade1$country==countries[i])])
+  decade1_mean$bipolar[i] <- mean(decade1$bipolar[which(decade1$country==countries[i])])
+  decade1_mean$ed[i] <- mean(decade1$ed[which(decade1$country==countries[i])])
+  decade1_mean$gini[i] <- mean(decade1$gini[which(decade1$country==countries[i])])
+  
+}
+
+decade1_mean <- na.exclude(decade1_mean)
+
+
+
+
+for(i in 1:length(countries)){
+  
+  decade2_mean$country[i] <- countries[i]
+  decade2_mean$schizophrenia[i] <- mean(decade2$schizophrenia[which(decade2$country==countries[i])])
+  decade2_mean$depression[i] <- mean(decade2$depression[which(decade2$country==countries[i])])
+  decade2_mean$anxiety[i] <- mean(decade2$anxiety[which(decade2$country==countries[i])])
+  decade2_mean$bipolar[i] <- mean(decade2$bipolar[which(decade2$country==countries[i])])
+  decade2_mean$ed[i] <- mean(decade2$ed[which(decade2$country==countries[i])])
+  decade2_mean$gini[i] <- mean(decade2$gini[which(decade2$country==countries[i])])
+  
+}
+
+decade2_mean <- na.exclude(decade2_mean)
+
+
+
+
+for(i in 1:length(countries)){
+  
+  decade3_mean$country[i] <- countries[i]
+  decade3_mean$schizophrenia[i] <- mean(decade3$schizophrenia[which(decade3$country==countries[i])])
+  decade3_mean$depression[i] <- mean(decade3$depression[which(decade3$country==countries[i])])
+  decade3_mean$anxiety[i] <- mean(decade3$anxiety[which(decade3$country==countries[i])])
+  decade3_mean$bipolar[i] <- mean(decade3$bipolar[which(decade3$country==countries[i])])
+  decade3_mean$ed[i] <- mean(decade3$ed[which(decade3$country==countries[i])])
+  decade3_mean$gini[i] <- mean(decade3$gini[which(decade3$country==countries[i])])
+  
+}
+
+decade3_mean <- na.exclude(decade3_mean)
+```
+
+E vamos resumir tudo isso em um só objeto, `decades`:
+
+```{r}
+decade1_mean$decade <- "1990-1999"
+decade2_mean$decade <- "2000-2009"
+decade3_mean$decade <- "2010-2019"
+
+decades <- rbind(decade1_mean, decade2_mean, decade3_mean)
+
+decades <- decades[order(decades$country),]
+```
+
+Acabamos não precisando disso, mas categorizamos os países em continentes também. Não vamos incluir o código para fazer isso aqui, porque não é necessário para a análise, mas você vai encontrar essa informação na tabela final, se a abrir.
+
+Por fim, vamos salvar essa tabela, para podermos acessá-la facilmente quando quisermos:
+
+```{r}
+write.table(decades, file=here("data", "processed", "decade_means_absolute.txt"), sep="\t", row.names=F)
+```
+
+Com isso, nossos dados estão prontos para fazermos as análises de modelagem!
+
+## Ajuste de modelos e diagnóstico
+
+### Correlação linear entre transtornos
+
+Como não estamos avaliando causalidade entre transtornos, somente a correlação, usamos uma correlação linear simples para testar se os transtornos mentais estão relacionados entre si. Vamos começar fazendo essa avaliação carregando a tabela de médias por década com dados absolutos populacionais, e guardá-la no objeto `decades`:
+
+```{r}
+decades <- read.table(here("data","processed","decade_means_absolute.txt"), header=T)
+```
+
+Agora, como não estamos interessados na correlação entre transtornos ao longo do tempo, vamos fazer a média de prevalência dos transtornos por país, de forma a obter apenas um valor de prevalência na população por país:
+
+```{r}
+decades$country <- as.factor(decades$country)
+
+schizophrenia <- aggregate(decades$schizophrenia~factor(decades$country), FUN=mean)
+depression <- aggregate(decades$depression~factor(decades$country), FUN=mean)
+anxiety <- aggregate(decades$anxiety~factor(decades$country), FUN=mean)
+bipolar <- aggregate(decades$bipolar~factor(decades$country), FUN=mean)
+ed <- aggregate(decades$ed~factor(decades$country), FUN=mean)
+gini <- aggregate(decades$gini~factor(decades$country), FUN=mean)
+```
+
+Por fim, vamos fazer os modelos lineares, guardando-os em objetos cujo nome é `lm_inicial do primeiro transtorno_inicial do segundo transtorno`:
+
+```{r}
+lm_sd <- lm(schizophrenia$`decades$schizophrenia`~depression$`decades$depression`)
+lm_sa <- lm(schizophrenia$`decades$schizophrenia`~anxiety$`decades$anxiety`)
+lm_sb <- lm(schizophrenia$`decades$schizophrenia`~bipolar$`decades$bipolar`)
+lm_se <- lm(schizophrenia$`decades$schizophrenia`~ed$`decades$ed`)
+lm_da <- lm(depression$`decades$depression`~anxiety$`decades$anxiety`)
+lm_db <- lm(depression$`decades$depression`~bipolar$`decades$bipolar`)
+lm_de <- lm(depression$`decades$depression`~ed$`decades$ed`)
+lm_ab <- lm(anxiety$`decades$anxiety`~bipolar$`decades$bipolar`)
+lm_ae <- lm(anxiety$`decades$anxiety`~ed$`decades$ed`)
+lm_be <- lm(bipolar$`decades$bipolar`~ed$`decades$ed`)
+```
+
+Aplicando a função `summary` às correlações, obtemos os R² ajustados e a significância da correlação, resumidos na tabela abaixo:
+
+```{r}
+summary(lm_sd)
+summary(lm_sa)
+summary(lm_sb)
+summary(lm_se)
+summary(lm_da)
+summary(lm_db)
+summary(lm_de)
+summary(lm_ab)
+summary(lm_ae)
+summary(lm_be)
+```
+
+|                   | **Esquizofrenia** |   Depressão   |   Ansiedade   |    Bipolar    |  Alimentares  |
+|:-----------------:|:-----------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+| **Esquizofrenia** |        \-         | 0.9527 \*\*\* | 0.9737 \*\*\* | 0.7666 \*\*\* | 0.7666 \*\*\* |
+|   **Depressão**   |        \-         |      \-       | 0.929 \*\*\*  | 0.8587 \*\*\* | 0.7547 \*\*\* |
+|   **Ansiedade**   |        \-         |      \-       |      \-       | 0.8328 \*\*\* | 0.8095 \*\*\* |
+|    **Bipolar**    |        \-         |      \-       |      \-       |      \-       | 0.8251 \*\*\* |
+
+Três asteriscos indicam correlações significativas (p-valor \< 0,001).
+
+Dessa forma, todos os transtornos parecem estar significativamente correlacionados entre si, sendo as correlações entre esquizofrenia e ansiedade, esquizofrenia e depressão e depressão e ansiedade são as mais fortes. Isso não necessariamente indica causalidade, porque o que estamos avaliando aqui, novamente, não é uma relação causal, e sim, uma correlação. Também não indica que indivíduos esquizofrênicos costumam ter mais depressão e ansiedade, ou que indivíduos deprimidos são mais ansiosos, pois é um efeito populacional. O que esse valor nos diz é que populações mais esquizofrênicas também tendem a ser mais ansiosas e deprimidas, e populações mais deprimidas tendem a ser mais ansiosas e vice-versa.
+
+### Teste de causalidade entre transtornos, desigualdade social e predisposição genética
+
+Para testarmos a causalidade entre nossos transtornos, a desigualdade social e a predisposição genética, vamos precisar de mais alguns pacotes:
+
+```{r}
+library(bbmle)
+library(sads)
+library(DHARMa)
+```
+
+Também vamos precisar dos dados absolutos, e de transformar as décadas em fatores numéricos. Isso é importante porque o texto separado por hífen pode nos causar problemas em diante:
+
+```{r}
+abs_decades <- read.table(here("data","processed","decade_means_absolute.txt"), header=T)
+
+abs_decades$decade[which(abs_decades$decade=="1990-1999")] <- 1
+abs_decades$decade[which(abs_decades$decade=="2000-2009")] <- 2
+abs_decades$decade[which(abs_decades$decade=="2010-2019")] <- 3
+abs_decades$decade <- as.factor(abs_decades$decade)
+```
+
+Vamos colocar na tabela de dados absolutos também os dados de população como uma coluna nova:
+
+```{r}
+worldbank_1 <- read.csv(here("data","raw","worldbank","WDICSV.csv"), sep=",", header=T)
+pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),] # only population data
+pop <- pop[which(pop$Country.Name %in% abs_decades$country),]
+pop <- t(pop)
+
+colnames(pop) <- pop[1,]
+pop <- as.data.frame(pop)
+pop <- pop[5:68,]
+pop[65,] <- colnames(pop)
+pop$year <- rownames(pop)
+pop$year <- sub("X", "", pop$year)
+
+abs_decades$pop <- rep(NA, length(abs_decades$country))
+
+countries <- as.character(pop[65,])
+
+pop <- pop[1:64,]
+
+pop <- apply(pop, FUN=as.numeric, MARGIN=c(1,2))
+pop <- data.frame(pop)
+
+for(i in 1:length(abs_decades$country)){
+  
+  abs_decades$pop[which(abs_decades$country==countries[i] & abs_decades$decade==1)] <- mean(pop[(which(pop$year>1989 & pop$year<2000)),i])
+  
+  abs_decades$pop[which(abs_decades$country==countries[i] & abs_decades$decade==2)] <- mean(pop[(which(pop$year>1999 & pop$year<2010)),i])
+  
+  abs_decades$pop[which(abs_decades$country==countries[i] & abs_decades$decade==3)] <- mean(pop[(which(pop$year>2009 & pop$year<2020)),i])
+  
+}
+```
+
+> **IMPORTANTE!** Note que, daqui em diante, precisamos logaritmizar os dados de prevalência de transtornos e de população e também arredondar os logaritmos. Não gostamos dessa solução, mas, quando tentamos fazer as análises sem logaritmos, obtivemos gráficos um tanto quanto bizarros, como é possível ver no gráfico dos resíduos do DHARMa da distribuição Poisson sem a transformação logarítmica e arredondamento dos dados:
+>
+> ![](images/models/NOLOG_NOROUND_poisson_schizo_tempo_dharma.png){width="419"}
+>
+> Concluímos que isso se devia ao fato de que alguns países têm populações enormes, como a Índia, e outros têm populações minúsculas, como Vanuatu. O logaritmo transforma todas as populações para a mesma escala, permitindo uma análise mais pareada. O arredondamento se deveu ao fato de que os modelos binomiais não rodavam com casas após a vírgula, e os modelos Poisson ficavam com vários NAs. Não sabemos muito bem o que mais poderíamos ter feito nessa situação, mas gostaríamos de deixar claro que não gostamos dessa solução.
+>
+> Caso você queira ver os gráficos gerados com os dados sem transformações, pode encontrá-los em `images -> models`, com nomes que começam com `NOLOG_NOROUND`.
+
+Vamos fazer a transformação citada acima: logaritmizar os dados de prevalência e população e arredondá-los.
+
+```{r}
+abs_decades$schizophrenia <- log(abs_decades$schizophrenia)
+abs_decades$depression <- log(abs_decades$depression)
+abs_decades$anxiety <- log(abs_decades$anxiety)
+abs_decades$bipolar <- log(abs_decades$bipolar)
+abs_decades$ed <- log(abs_decades$ed)
+abs_decades$pop <- log(abs_decades$pop)
+
+abs_decades$schizophrenia <- round(abs_decades$schizophrenia)
+abs_decades$depression <- round(abs_decades$depression)
+abs_decades$anxiety <- round(abs_decades$anxiety)
+abs_decades$bipolar <- round(abs_decades$bipolar)
+abs_decades$ed <- round(abs_decades$ed)
+abs_decades$pop <- round(abs_decades$pop)
+```
+
+O próximo passo é a modelagem. Essa parte é extensa e será demonstrada somente para a esquizofrenia, mas você pode encontrar o código para todos os transtornos no arquivo `glm.R`.
+
+Vamos começar fazendo modelos linear, Poisson e binomial para a esquizofrenia como variável resposta ao tempo:
+
+```{r}
+glm.linear.year <- lm(schizophrenia ~ decade,
+                 data=abs_decades)
+
+glm.pois.year <- glm(schizophrenia ~ decade,
+                data=abs_decades,
+                family=poisson(link="log"))
+
+glm.bin.year <- glm(cbind(schizophrenia,pop) ~ decade,
+               data=abs_decades,
+               family=binomial(link="logit"))
+```
+
+Vamos plotar os resíduos desses modelos usando o DHARMa:
+
+```{r}
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
+plot(sim_res_lm)
+```
+
+![](images/models/schizo_linear_tempo_dharma.png)
+
+```{r}
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
+plot(sim_res_pois)
+```
+
+![](images/models/schizo_poisson_tempo_dharma.png)
+
+```{r}
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
+plot(sim_res_bin)
+```
+
+![](images/models/schizo_binomial_tempo_dharma.png)
+
+O modelo linear parece ser o que melhor se ajusta aos nossos dados, segundo o DHARMa, porque os resíduos estão mais alinhados com a bissetriz (em vermelho) no QQ plot. Isso se confirma nos modelos subsequentes, tanto na análise visual quanto pelo AIC e log-verossimilhança (que serão apresentados a seguir). Como nós geramos as imagens do DHARMa e também dos resíduos dos modelos de forma clássica, temos muitas imagens (mais de 100!), por isso, vamos apresentar, daqui em diante, somente as imagens dos modelos lineares. Você pode ver as imagens dos modelos Poisson e binomiais na pasta `images -> models`.
+
+Agora, vamos testar um modelo em que a esquizofrenia é uma variável resposta do tempo e também do índice de Gini, testando, assim, a causalidade entre a desigualdade social e a prevalência de esquizofrenia. Estamos procurando por um desvio de resíduos aqui: a diferença entre os resíduos do modelo anterior e desse corresponde à causalidade entre a desigualdade social e a esquizofrenia, portanto, procuramos pelo modelo que tenha resíduos mais diferentes do anterior.
+
+```{r}
+glm.linear.gini <- lm(schizophrenia ~ decade + gini,
+                      data=abs_decades)
+
+glm.pois.gini <- glm(schizophrenia ~ decade + gini,
+                     data=abs_decades,
+                     family=poisson(link="log"))
+
+glm.bin.gini <- glm(cbind(schizophrenia,pop) ~ decade + gini,
+                    data=abs_decades,
+                    family=binomial(link="logit"))
+```
+
+Vamos visualizar esses modelos. A partir de agora, vamos apresentar os gráficos do DHARMa para os modelos lineares logo após o código de plotagem, e a plotagem dos demais modelos será apresentada somente em código.
+
+```{r}
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.gini)
+plot(sim_res_lm)
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.gini)
+plot(sim_res_pois)
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
+plot(sim_res_bin)
+```
+
+![](images/models/schizo_linear_gini_dharma.png)
+
+O ajuste melhorou, mas, além disso, os resíduos não parecem ter mudado muito. Talvez a predisposição genética, representada aqui por cada país, nos diga algo sobre isso:
+
+```{r}
+glm.linear.country <- lm(schizophrenia ~ decade + country,
+                         data=abs_decades)
+
+glm.pois.country <- glm(schizophrenia ~ decade + country,
+                        data=abs_decades,
+                        family=poisson(link="log"))
+
+glm.bin.country <- glm(cbind(schizophrenia,pop) ~ decade + country,
+                       data=abs_decades,
+                       family=binomial(link="logit"))
+
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country)
+plot(sim_res_lm)
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country)
+plot(sim_res_pois)
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
+plot(sim_res_bin)
+```
+
+![](images/models/schizo_linear_country_dharma.png)
+
+Os resíduos estão bem diferentes agora! Parece que o país onde uma população está tem uma relação de causalidade com a prevalência de esquizofrenia nela.
+
+Não estava na nossa hipótese inicial, mas ficamos curiosos para saber se a desigualdade e o país onde a população está podem estar causando transtornos conjuntamente, e não de forma independente. Por isso, fizemos também uma quarta categoria de modelos, na qual juntamos os dois anteriores:
+
+```{r}
+glm.linear.country.gini <- lm(schizophrenia ~ decade + country + gini,
+                         data=abs_decades)
+
+glm.pois.country.gini <- glm(schizophrenia ~ decade + country + gini,
+                        data=abs_decades,
+                        family=poisson(link="log"))
+
+glm.bin.country.gini <- glm(cbind(schizophrenia,pop) ~ decade + country + gini,
+                       data=abs_decades,
+                       family=binomial(link="logit"))
+
+sim_res_lm <- simulateResiduals(fittedModel = glm.linear.country.gini)
+plot(sim_res_lm)
+sim_res_pois <- simulateResiduals(fittedModel = glm.pois.country.gini)
+plot(sim_res_pois)
+sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
+plot(sim_res_bin)
+```
+
+![](images/models/schizo_linear_country_gini_dharma.png)
+
+Não parece ter mudado muito, então provavelmente a causalidade, ou pelo menos a maior parte dela, vem do país onde a população está, e não da desigualdade social para a esquizofrenia.
+
+Extraímos também o AIC e a log-verossimilhança para todos os modelos de causalidade da esquizofrenia:
+
+```{r}
+logLik(glm.linear.year)
+logLik(glm.pois.year)
+logLik(glm.bin.year)
+
+AIC(glm.linear.year)
+AIC(glm.pois.year)
+AIC(glm.bin.year)
+
+logLik(glm.linear.gini)
+logLik(glm.pois.gini)
+logLik(glm.bin.gini)
+
+AIC(glm.linear.gini)
+AIC(glm.pois.gini)
+AIC(glm.bin.gini)
+
+logLik(glm.linear.country)
+logLik(glm.pois.country)
+logLik(glm.bin.country)
+
+AIC(glm.linear.country)
+AIC(glm.pois.country)
+AIC(glm.bin.country)
+
+logLik(glm.linear.country.gini)
+logLik(glm.pois.country.gini)
+logLik(glm.bin.country.gini)
+
+AIC(glm.linear.country.gini)
+AIC(glm.pois.country.gini)
+AIC(glm.bin.country.gini)
+```
+
+O que obtivemos foi o seguinte:
+
+**!!!!! TABELA BONITINHA QUE SÓ PODE IR NO FINAL !!!!!**
+
+Repetimos todo esse procedimento para os outros quatro transtornos, como você pode verificar no arquivo `glm.R`.
+
+Para a depressão, o modelo cujos resíduos foram mais distantes dos resíduos do modelo somente com o tempo foi o de tempo + país:
+
+![Depressão, Tempo](images/models/depression_linear_tempo_dharma.png)
+
+![Depressão, Tempo + Gini](images/models/depression_linear_gini_dharma.png)
+
+![Depressão, Tempo + país](images/models/depression_linear_country_dharma.png)
+
+![Depressão, Tempo + Gini + país](images/models/depression_linear_country_gini_dharma.png)
+
+Também extraímos AICs e log-verossimilhanças para a depressão, obtendo os seguintes dados:
+
+**!!!!! TABELA BONITINHA QUE SÓ PODE IR NO FINAL !!!!!**
+
+Para a ansiedade:
+
+![Ansiedade, Tempo](images/models/anxiety_linear_tempo_dharma.png)
+
+![Ansiedade, Tempo + Gini](D:/Statistical-Modelling/images/models/anxiety_linear_gini_dharma.png)
+
+![Ansiedade, Tempo + país](D:/Statistical-Modelling/images/models/anxiety_linear_country_dharma.png)
+
+![Ansiedade, Tempo + país + Gini](D:/Statistical-Modelling/images/models/anxiety_linear_country_gini_dharma.png)
+
+**!!!!! TABELA BONITINHA QUE SÓ PODE IR NO FINAL !!!!!**
+
+Para o transtorno bipolar:
+
+![Transtorno bipolar, Tempo](D:/Statistical-Modelling/images/models/bipolar_linear_tempo_dharma.png)
+
+![Transtorno bipolar, Tempo + Gini](D:/Statistical-Modelling/images/models/bipolar_linear_gini_dharma.png)
+
+![Transtorno bipolar, Tempo + país](D:/Statistical-Modelling/images/models/bipolar_linear_country_dharma.png)
+
+![Transtorno bipolar, Tempo + país + Gini](D:/Statistical-Modelling/images/models/bipolar_linear_country_gini_dharma.png)
+
+**!!!!! TABELA BONITINHA QUE SÓ PODE IR NO FINAL !!!!!**
+
+E para os transtornos alimentares:
+
+![Transtornos alimentares, Tempo](D:/Statistical-Modelling/images/models/ed_linear_tempo_dharma.png)
+
+![Transtornos alimentares, Tempo + Gini](D:/Statistical-Modelling/images/models/ed_linear_gini_dharma.png)
+
+![Transtornos alimentares, Tempo + país](D:/Statistical-Modelling/images/models/ed_poisson_country_dharma.png)
+
+![Transtornos alimentares, Tempo + Gini + país](D:/Statistical-Modelling/images/models/ed_poisson_country_gini_dharma.png)
+
+**!!!!! TABELA BONITINHA QUE SÓ PODE IR NO FINAL !!!!!**
+
+Obtivemos padrões parecidos, mesmo para os transtornos que imaginávamos terem causalidade forte com a desigualdade social, como a depressão e a ansiedade. Isso pode se dever tanto ao fato de que realmente esses transtornos mentais não são causados pela desigualdade social, ou por problemas na nossa análise.
+
+O índice de Gini é uma medida de desigualdade social, isto é, mede apenas a diferença de renda entre as pessoas de um mesmo país, não indicando, contudo, a renda delas. Isso significa que um país em que a maioria das pessoas é muito rica terá um bom índice de Gini, mas isso também acontecerá num país em que a maioria das pessoas é muito pobre. Dessa forma, reconhecemos um viés na nossa análise. Como já apontado, certos transtornos mentais podem estar correlacionados, ou serem causados, pelo menos a nível populacional, por pressões relacionadas às condições socioeconômicas e de trabalho da população. Assim, é possível que nossas relações de causalidade estejam enviesadas pela baixa sensibilidade do índice de Gini às condições socioeconômicas gerais, de trabalho e políticas da população.
+
+Supor que uma população de um país tem uma homogeneidade genética tal que nos permita usar o país como indicador de predisposição genética apresenta um problema análogo. Países diferentes têm situações socioeconômicas diferentes, que podem causar transtornos mentais. Adicionalmente, os efeitos da entrada e saída de pessoas nos países, principalmente nos de baixa população, não foi estudado, mas comprometem a homogeneidade genética da população, fazendo o uso do país como indicador de predisposição genética ficar ainda mais frágil.
+
+Reconhecemos, portanto, que nossa análise pode estar enviesada, considerando todas essas informações, e recomendamos o uso do PIB *per capita* e do índice de Gini conjuntamente para avaliar a situação socioeconômica da população. Para a predisposição genética, talvez indicadores moleculares sejam adequados, contanto que a pessoa interessada em estudar essa causalidade esteja ciente das possíveis implicações raciais desse tipo de estudo.
+
+# Conclusões
+
+### Lógica da causalidade
+
+O modelo só com tempo não leva em consideração nenhuma causalidade. Ele terá resíduo de tamanho x. O modelo com gini, por exemplo, leva em consideração uma variável a mais, que pode ser causal. Ele tem resíduo de tamanho x + a. Essa diferença a entre os resíduos do modelo sem gini e com gini simboliza a causalidade de gini sobre os dados, então, quanto maior a diferença entre os resíduos do modelo sem a variável e com ela, maior a causalidade.

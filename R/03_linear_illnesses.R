@@ -39,6 +39,21 @@ summary(lm_se)
 par(mfrow=c(2,2))
 plot(lm_se)
 
+lm_da <- lm(depression$`decades$depression`~anxiety$`decades$anxiety`)
+summary(lm_da)
+par(mfrow=c(2,2))
+plot(lm_da)
+
+lm_db <- lm(depression$`decades$depression`~bipolar$`decades$bipolar`)
+summary(lm_db)
+par(mfrow=c(2,2))
+plot(lm_db)
+
+lm_de <- lm(depression$`decades$depression`~ed$`decades$ed`)
+summary(lm_de)
+par(mfrow=c(2,2))
+plot(lm_de)
+
 lm_ab <- lm(anxiety$`decades$anxiety`~bipolar$`decades$bipolar`)
 summary(lm_ab)
 par(mfrow=c(2,2))
