@@ -101,6 +101,7 @@ pop <- pop[which(pop$Country.Name %in% relative_gini$country),] # only populatio
 # Create data frame to store the information
 
 absolute_gini <- relative_gini
+absolute_gini$pop <- rep(NA, length(absolute_gini$country))
 
 # Retrieve population data
 
@@ -119,15 +120,20 @@ for(j in 1:length(pop$Country.Name)){
     a$anxiety[which(a$year == colnames(b)[i])] <- as.numeric(a$anxiety[which(a$year == colnames(b)[i])]*b[i])
     a$bipolar[which(a$year == colnames(b)[i])] <- as.numeric(a$bipolar[which(a$year == colnames(b)[i])]*b[i])
     a$ed[which(a$year == colnames(b)[i])] <- as.numeric(a$ed[which(a$year == colnames(b)[i])]*b[i])
+    a$pop[which(a$year == colnames(b)[i])] <- b[i]
   }
   
   absolute_gini[(grep(pop$Country.Name[j], relative_gini$country)),] <- a
 
 }
 
+# Add population data to table
+
 # Remove points without population data
 
 absolute_gini <- absolute_gini[-which(absolute_gini$schizophrenia < 1),]
+
+absolute_gini$pop <- as.numeric(absolute_gini$pop)
 
 # Save this data
 
