@@ -564,11 +564,11 @@ for(i in 1:length(abs_decades$country)){
 }
 ```
 
-> **IMPORTANTE!** Note que, daqui em diante, precisamos logaritmizar os dados de prevalência de transtornos e de população e também arredondar os logaritmos. Não gostamos dessa solução, mas, quando tentamos fazer as análises sem logaritmos, obtivemos gráficos um tanto quanto bizarros, como é possível ver no gráfico dos resíduos do DHARMa da distribuição Poisson sem a transformação logarítmica e arredondamento dos dados:
+> **IMPORTANTE!** Note que, daqui em diante, precisamos logaritmizar os dados de prevalência de transtornos e de população e também arredondar os logaritmos. Não gostamos desse arredondamento, mas não conseguimos rodar os modelos binomiais com casas após a vírgula, e os modelos Poisson ficavam com vários NAs. Quando tentamos fazer as análises sem logaritmos, obtivemos gráficos um tanto quanto bizarros, como é possível ver no gráfico dos resíduos do DHARMa da distribuição Poisson sem a transformação logarítmica e arredondamento dos dados:
 >
 > ![](images/models/NOLOG_NOROUND_poisson_schizo_tempo_dharma.png){width="419"}
 >
-> Concluímos que isso se devia ao fato de que alguns países têm populações enormes, como a Índia, e outros têm populações minúsculas, como Vanuatu. O logaritmo transforma todas as populações para a mesma escala, permitindo uma análise mais pareada. O arredondamento se deveu ao fato de que os modelos binomiais não rodavam com casas após a vírgula, e os modelos Poisson ficavam com vários NAs. Não sabemos muito bem o que mais poderíamos ter feito nessa situação, mas gostaríamos de deixar claro que não gostamos dessa solução.
+> Concluímos que isso se devia ao fato de que alguns países têm populações enormes, como a Índia, e outros têm populações minúsculas, como Vanuatu. O logaritmo transforma todas as populações para a mesma escala, permitindo uma análise mais pareada. Não sabemos muito bem o que mais poderíamos ter feito nessa situação, mas gostaríamos de deixar claro que não gostamos da solução do arredondamento.
 >
 > Caso você queira ver os gráficos gerados com os dados sem transformações, pode encontrá-los em `images -> models`, com nomes que começam com `NOLOG_NOROUND`.
 
