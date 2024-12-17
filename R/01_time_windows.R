@@ -187,6 +187,7 @@ decade2_mean <- data.frame(country=rep(NA, length(countries)),
                            gini=rep(NA, length(countries))
 )
 
+
 decade3_mean <- data.frame(country=rep(NA, length(countries)),
                            schizophrenia=rep(NA, length(countries)),
                            depression=rep(NA, length(countries)),
