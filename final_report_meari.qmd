@@ -543,21 +543,21 @@ sim_res_lm <- simulateResiduals(fittedModel = glm.linear.year)
 plot(sim_res_lm)
 ```
 
-![](images/models/schizo_linear_tempo_dharma.png)
+![Esquizofrenia, Linear, Tempo](images/models/schizo_linear_tempo_dharma.png)
 
 ```{r}
 sim_res_pois <- simulateResiduals(fittedModel = glm.pois.year)
 plot(sim_res_pois)
 ```
 
-![](images/models/schizo_poisson_tempo_dharma.png)
+![Esquizofrenia, Poisson, Tempo](images/models/schizo_poisson_tempo_dharma.png)
 
 ```{r}
 sim_res_bin <- simulateResiduals(fittedModel = glm.bin.year)
 plot(sim_res_bin)
 ```
 
-![](images/models/schizo_binomial_tempo_dharma.png)
+![Esquizofrenia, Binomial, Tempo](images/models/schizo_binomial_tempo_dharma.png)
 
 O modelo linear parece ser o que melhor se ajusta aos nossos dados, segundo o DHARMa, porque os resíduos estão mais alinhados com a bissetriz (em vermelho) no QQ plot. Isso se confirma nos modelos subsequentes, tanto na análise visual quanto pelo AIC e log-verossimilhança (que serão apresentados a seguir). Como nós geramos as imagens do DHARMa e também dos resíduos dos modelos de forma clássica, temos muitas imagens (mais de 100!), por isso, vamos apresentar, daqui em diante, somente as imagens dos modelos lineares. Você pode ver as imagens dos modelos Poisson e binomiais na pasta `images -> models`.
 
@@ -587,7 +587,7 @@ sim_res_bin <- simulateResiduals(fittedModel = glm.bin.gini)
 plot(sim_res_bin)
 ```
 
-![](images/models/schizo_linear_gini_dharma.png)
+![Esquizofrenia, Linear, Tempo + Gini](images/models/schizo_linear_gini_dharma.png)
 
 O ajuste melhorou, mas, além disso, os resíduos não parecem ter mudado muito. Talvez a predisposição genética, representada aqui por cada país, nos diga algo sobre isso:
 
@@ -611,7 +611,7 @@ sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country)
 plot(sim_res_bin)
 ```
 
-![](images/models/schizo_linear_country_dharma.png)
+![Esquizofrenia, Linear, Tempo + país](images/models/schizo_linear_country_dharma.png)
 
 Os resíduos estão bem diferentes agora! Parece que o país onde uma população está tem uma relação de causalidade com a prevalência de esquizofrenia nela.
 
@@ -637,7 +637,7 @@ sim_res_bin <- simulateResiduals(fittedModel = glm.bin.country.gini)
 plot(sim_res_bin)
 ```
 
-![](images/models/schizo_linear_country_gini_dharma.png)
+![Esquizofrenia, Linear, Tempo + país + Gini](images/models/schizo_linear_country_gini_dharma.png)
 
 Não parece ter mudado muito, então provavelmente a causalidade, ou pelo menos a maior parte dela, vem do país onde a população está, e não da desigualdade social para a esquizofrenia.
 
@@ -723,17 +723,9 @@ Para o transtorno bipolar:
 
 E para os transtornos alimentares:
 
-![Transtornos alimentares, Tempo](D:/Statistical-Modelling/images/models/ed_linear_tempo_dharma.png)
-
-![Transtornos alimentares, Tempo + Gini](D:/Statistical-Modelling/images/models/ed_linear_gini_dharma.png)
-
-![Transtornos alimentares, Tempo + país](D:/Statistical-Modelling/images/models/ed_poisson_country_dharma.png)
-
-![Transtornos alimentares, Tempo + Gini + país](D:/Statistical-Modelling/images/models/ed_poisson_country_gini_dharma.png)
-
 **!!!!! TABELA BONITINHA QUE SÓ PODE IR NO FINAL !!!!!**
 
-Obtivemos padrões parecidos, mesmo para os transtornos que imaginávamos terem causalidade forte com a desigualdade social, como a depressão e a ansiedade. Isso pode se dever tanto ao fato de que realmente esses transtornos mentais não são causados pela desigualdade social, ou por problemas na nossa análise.
+Obtivemos padrões parecidos, mesmo para os transtornos que imaginávamos terem causalidade forte com a desigualdade social, como a depressão e a ansiedade. Isso pode se dever tanto ao fato de que realmente esses transtornos mentais não são causados pela desigualdade social, ou por problemas na nossa análise, como os que discutiremos a seguir. Lembre-se, você pode ver os gráficos dos resíduos clássicos para todos os modelos e dos resíduos do DHARMa para os modelos Poisson e binomial na pasta `images -> models`.
 
 O índice de Gini é uma medida de desigualdade social, isto é, mede apenas a diferença de renda entre as pessoas de um mesmo país, não indicando, contudo, a renda delas. Isso significa que um país em que a maioria das pessoas é muito rica terá um bom índice de Gini, mas isso também acontecerá num país em que a maioria das pessoas é muito pobre. Dessa forma, reconhecemos um viés na nossa análise. Como já apontado, certos transtornos mentais podem estar correlacionados, ou serem causados, pelo menos a nível populacional, por pressões relacionadas às condições socioeconômicas e de trabalho da população. Assim, é possível que nossas relações de causalidade estejam enviesadas pela baixa sensibilidade do índice de Gini às condições socioeconômicas gerais, de trabalho e políticas da população.
 
