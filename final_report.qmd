@@ -9,7 +9,7 @@ bibliography: references.bib
 ## Introdução
 
 -   Pergunta principal do projeto "A prevalência de doenças mentais da população brasileira está correlacionada com desigualdade social?"
--   Índice de Gini modelado com a Curva de Lorenz
+-   Índice de Gini modelado com a Curva de Lorenz Corrado Gini
 -   Foco em 5 doenças mentais: Esquizofrenia, Transtorno Bipolar, Transtorno Alimentar, Ansiedade e Depressão
     -   Esquizofrenia @Vereczkei_Mirnics_schizophrenia_2011
     -   Transtorno Bipolar @gordovez_genetics_2020
@@ -59,11 +59,11 @@ countries <- countries[-c(2,5,12,66,67,85,109,112,205,211)]
 prevalence_by_country <- prevalence[which(prevalence$Entity %in% countries==T),]
 ```
 
-Vamos combinar esses dados com o Índice de GINI à seguir.
+Vamos combinar esses dados com o Índice de Gini à seguir.
 
-#### Índice de GINI
+#### Índice de Gini
 
--   O Índice de GINI foi proposto por ... em .... e é atualmente utilizado para quantificar o nível de desigualdade de renda de um país.
+O Índice de Gini foi proposto por Corrado Gini em 1912 no trabalho "Variabilità e Mutabilità" [@ceriani_origins_2012] e é atualmente utilizado para quantificar o nível de desigualdade de renda de um país. Ele expressa a distância esperada ao acaso entre a renda de duas pessoas de uma população relativa à média de renda do país, de forma que valores mais próximos de 0 indicam maior igualdade de renda, e valores próximos de 1 indicam maior desigualdade. Os dados utilizados neste projeto foram obtidos da base [World Inequality Database](https://wid.world/) e processado pelo website Our World In Data, podendo ser acessados através deste [link](https://ourworldindata.org/economic-inequality).
 
 Primeiro, vamos carregar os dados:
 
@@ -74,7 +74,7 @@ gini <- read.csv(here("data",
                  header=T, sep=",")
 ```
 
-Agora vamos criar uma tabela combinando os dados de prevalência de transtornos mentais e o Índice de GINI. Vamos primeiro encontrar os países que constam tanto na tabela de prevalência quanto na tabela do GINI e criar uma base para a tabela `prevalence_with_gini`:
+Agora vamos criar uma tabela combinando os dados de prevalência de transtornos mentais e o Índice de Gini. Vamos primeiro encontrar os países que constam tanto na tabela de prevalência quanto na tabela do Gini e criar uma base para a tabela `prevalence_with_gini`:
 
 ```{r}
 #
@@ -96,9 +96,7 @@ prevalence_with_gini <- prevalence_with_gini[which(prevalence_with_gini$country 
 countries_prevalence <- unique(prevalence_with_gini$country)
 ```
 
-Agora vamos combinar as tabelas com um `for loop`
-
--   **PEDIR EXPLICAÇÃO BÁSICA SOBRE ESSE LOOP**
+Agora vamos combinar as tabelas com um `for loop` que itera entre cada país, filtrando os anos que apresentam tanto dados de prevalência quanto dados de Índice de Gini e combinando-os em uma tabela única (`prevalence_gini_intersection`):
 
 ```{r}
 prevalence_gini_intersection <- data.frame(
@@ -114,7 +112,7 @@ prevalence_gini_intersection <- data.frame(
 
 for(i in 1:length(countries_prevalence)){
   
-  b <- gini[which(gini$Entity==countries_prevalence[1]),]
+  b <- gini[which(gini$Entity==countries_prevalence[i]),]
   
   a <- prevalence_with_gini[which(prevalence_with_gini$country==countries_prevalence[i]),]
   
@@ -148,7 +146,7 @@ relative_gini <- read.table(here("data",
                             header=T)
 ```
 
-A tabela a combinada é composta pelos dados de prevalência dos transtornos mentais por país, por ano, em porcentagem, mas é mais fácil ter uma ideia inicial dos padrões dos dados através de gráficos, então vamos fazer um combinando os dados de todos os países:
+A tabela combinada é composta pelos dados de prevalência dos transtornos mentais por país, por ano, em porcentagem, mas é mais fácil ter uma ideia inicial dos padrões dos dados através de gráficos, então vamos fazer um combinando os dados de todos os países:
 
 ```{r}
 relative_gini$year <- as.factor(relative_gini$year)  
@@ -160,17 +158,16 @@ ggplot(relative_gini) +
   geom_bar(aes(x=year, y=schizophrenia, fill="Schizophrenia"), stat="identity") +
   geom_bar(aes(x=year, y=ed, fill="Eating disorders"), stat="identity") +
   labs(x="Year", y="Prevalence (relative)", fill="Disorders") +
-  theme(legend.position="bottom",
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  theme(legend.position="bottom")
 ```
+
+![](images/prevalence_by_year_world.png)
 
 Considerando os dados de todos os países juntos por ano, podemos observar que depressão é o transtorno mental com a maior prevalência durante todo o período analisado, enquanto ansiedade é o segundo transtorno com maior prevalência pelo menos desde 2006. Por outro lado, esquizofrenia e transtornos alimentares consistentemente têm as menores prevalências. No entanto, os modelos estatísticos utilizados nas próximas análises requerem dados de contagem absoluta da população, então vamos utilizá-los nas próximas etapas da construção dos dados finais.
 
 #### Dados de população absoluta
 
--   Descrição de dados da população mundial
-
--   **LEMBRAR DE COLOCAR A TABELA DE POPULAÇÃO MUNDIAL NO GITHUB**
+Os dados foram obtidos da base de dados DataBank, mantida pelo World Bank com dados de censos de de diversas fontes, obtidos principalmente através de programas da ONU. Ele podem ser acessados e baixados através deste [link](https://databank.worldbank.org/source/population-estimates-and-projections#).
 
 Vamos primeiro ler os dados e filtrar os países para os quais temos o Índice de GINI
 
@@ -189,9 +186,7 @@ pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),]
 pop <- pop[which(pop$Country.Name %in% relative_gini$country),] 
 ```
 
-Agora vamos transformar os dados de prevalência em porcentagem em dados de contagem populacional para facilitar a modelagem estatística:
-
--   **PEDIR EXPLICAÇÃO BÁSICA SOBRE O FOR LOOP**
+Agora vamos transformar os dados de prevalência em porcentagem de cada transtorno em dados de contagem populacional para permitir a modelagem estatística com modelos de contagem:
 
 ```{r}
 # Criando uma nova tabela para os dados absolutos
@@ -239,8 +234,6 @@ absolute_gini <- read.table(here("data",
                             header=T, 
                             sep="\t")
 ```
-
--   **perguntar sobre dados serem salvos em txt em vez de csv**
 
 Vamos agora fazer um novo gráfico para comparar os dados relativos com os dados absolutos:
 
