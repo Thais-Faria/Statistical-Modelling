@@ -10,7 +10,7 @@ bibliography: references.bib
 
 Transtornos mentais impactam negativamente a vida de centenas de milhões de pessoas no mundo todo. Muito embora exista uma vasta literatura, principalmente em psiquiatria, sobre as origens e comorbidades dos diferentes transtornos mentais, não há consenso sobre as causas da maioria deles. Sabemos, no entanto (e inclusive por experiência própria), que fatores externos ao indivíduo acometido podem acarretar no desenvolvimento de transtornos mentais, por exemplo, péssimas condições de trabalho e insegurança social, que estão correlacionadas a ansiedade e depressão (@prins_anxious_2015), bem como fatores internos, como predisposição genética (@Vereczkei_Mirnics_schizophrenia_2011, @gordovez_genetics_2020).
 
-Nos perguntamos, então, se transtornos mentais são causados por desigualdade social e/ou predisposição genética. Para responder a essa pergunta, selecionamos cinco transtornos mentais de grande prevalência na população mundial: esquizofrenia, transtorno bipolar, transtornos alimentares, ansiedade e depressão. Esperamos encontrar relação causal entre predisposição genética e todos os transtornos, no entanto, esperamos que ela seja mais forte para esquizofrenia, transtorno bipolar e transtornos alimentares, segundo aponta a literatura (@Vereczkei_Mirnics_schizophrenia_2011, @gordovez_genetics_2020, @doi:10.1177/2045125318814734, @https://doi.org/10.1002/ajmg.c.30171), e também porque, como já citado, esperamos que depressão e ansiedade sejam causadas também por fatores socioeconômicos (@prins_anxious_2015). A nível populacional, esperamos também que exista alguma relação entre os transtornos, porque uma maior incidência de transtornos mentais na população pode tanto ser um sintoma de uma má situação social no país, gerando mais transtornos, ou causar problemas a nível individual que podem se traduzir em uma maior incidência de transtornos como ansiedade e depressão a nível populacional.
+Nos perguntamos, então, se transtornos mentais são causados por desigualdade social e/ou predisposição genética. Para responder a essa pergunta, selecionamos cinco transtornos mentais de grande prevalência na população mundial: esquizofrenia, transtorno bipolar, transtornos alimentares, ansiedade e depressão. Esperamos encontrar relação causal entre predisposição genética e todos os transtornos, no entanto, esperamos que ela seja mais forte para esquizofrenia, transtorno bipolar e transtornos alimentares, segundo aponta a literatura (@Vereczkei_Mirnics_schizophrenia_2011, @gordovez_genetics_2020, @doi:10.1177/2045125318814734, @https://doi.org/10.1002/ajmg.c.30171), e também porque, como já citado, esperamos que depressão e ansiedade sejam causadas também por fatores socioeconômicos (@prins_anxious_2015). A nível populacional, esperamos também que exista alguma relação entre os transtornos, porque uma maior prevalência de transtornos mentais na população pode tanto ser um sintoma de uma má situação social no país, gerando mais transtornos, ou causar problemas a nível individual que podem se traduzir em uma maior prevalência de transtornos como ansiedade e depressão a nível populacional.
 
 Usamos como indicador socioeconômico o índice de Gini, que mede a desigualdade social dos países, segundo dados do World Inequality Database, e como indicador de predisposição genética a população de cada país individualmente, embora conheçamos os riscos dessa escolha (veja a discussão mais à frente). Nossa hipótese é de que as relações de causalidade sejam independentes, ou seja, que a desigualdade social e a predisposição genética causem transtornos mentais independentemente uns dos outros, e não levamos em consideração outros fatores que também podem causar esses transtornos a nível populacional, como criminalidade e drogadição. Nosso grafo acíclico direcionado (DAG) de causalidade para o cenário que imaginamos, então, é o seguinte:
 
@@ -35,9 +35,9 @@ library(patchwork)
 
 ## Dados
 
-### Incidência de Transtornos Mentais
+### Prevalência de Transtornos Mentais
 
-Os dados principais sobre incidência de transtornos mentais na população foram baixados da plataforma Kaggle, que disponibiliza conjuntos de dados para projetos de ciência de dados, e podem ser baixados através deste [link](https://www.kaggle.com/datasets/imtkaggleteam/mental-health). Os dados baixados do Kaggle foram compilados da literatura pelo Institute for Health Metrics and Evaluation (IHME)[@ihme], associado à University of Washington School of Medicine, e limpos e processados pela equipe do website Our World In Data @owid-mental-health . Ele apresenta dados de prevalência de transtornos mentais (ansiedade, depressão, transtornos alimentares, esquizofrenia e transtorno bipolar) em 214 países entre 1990 a 2019.
+Os dados principais sobre prevalência de transtornos mentais na população foram baixados da plataforma Kaggle, que disponibiliza conjuntos de dados para projetos de ciência de dados, e podem ser baixados através deste [link](https://www.kaggle.com/datasets/imtkaggleteam/mental-health). Os dados baixados do Kaggle foram compilados da literatura pelo Institute for Health Metrics and Evaluation (IHME)[@ihme], associado à University of Washington School of Medicine, e limpos e processados pela equipe do website Our World In Data @owid-mental-health . Ele apresenta dados de prevalência de transtornos mentais (ansiedade, depressão, transtornos alimentares, esquizofrenia e transtorno bipolar) em 214 países entre 1990 a 2019.
 
 Vamos primeiro carregar os dados:
 
@@ -90,7 +90,9 @@ prevalence_with_gini <- data.frame(
 
 countries_gini <- unique(gini$Entity)
 
-prevalence_with_gini <- prevalence_with_gini[which(prevalence_with_gini$country %in% countries_gini),]
+prevalence_with_gini <- prevalence_with_gini[which(
+  prevalence_with_gini$country %in% countries_gini
+  ),]
 
 countries_prevalence <- unique(prevalence_with_gini$country)
 ```
@@ -113,9 +115,13 @@ for(i in 1:length(countries_prevalence)){
   
   b <- gini[which(gini$Entity==countries_prevalence[i]),]
   
-  a <- prevalence_with_gini[which(prevalence_with_gini$country==countries_prevalence[i]),]
+  a <- prevalence_with_gini[which(
+    prevalence_with_gini$country==countries_prevalence[i]
+    ),]
   
-  a <- a[which((a$year) %in% gini$Year[which(gini$Entity==countries_prevalence[i])]),]
+  a <- a[which((a$year) %in% gini$Year[which(
+    gini$Entity==countries_prevalence[i]
+    )]),]
   
   b <- b[b$Year %in% a$year,]
   
@@ -202,11 +208,25 @@ for(j in 1:length(pop$Country.Name)){
   b <- b[,c(1,which(c %in% year))]
 
   for(i in 2:length(colnames(b))){
-    a$schizophrenia[which(a$year == colnames(b)[i])] <- as.numeric(a$schizophrenia[which(a$year == colnames(b)[i])]*b[i])
-    a$depression[which(a$year == colnames(b)[i])] <- as.numeric(a$depression[which(a$year == colnames(b)[i])]*b[i])
-    a$anxiety[which(a$year == colnames(b)[i])] <- as.numeric(a$anxiety[which(a$year == colnames(b)[i])]*b[i])
-    a$bipolar[which(a$year == colnames(b)[i])] <- as.numeric(a$bipolar[which(a$year == colnames(b)[i])]*b[i])
-    a$ed[which(a$year == colnames(b)[i])] <- as.numeric(a$ed[which(a$year == colnames(b)[i])]*b[i])
+    a$schizophrenia[which(a$year == colnames(b)[i])] <- as.numeric(
+      a$schizophrenia[which(a$year == colnames(b)[i])]*b[i]
+      )
+    
+    a$depression[which(a$year == colnames(b)[i])] <- as.numeric(
+      a$depression[which(a$year == colnames(b)[i])]*b[i]
+      )
+    
+    a$anxiety[which(a$year == colnames(b)[i])] <- as.numeric(
+      a$anxiety[which(a$year == colnames(b)[i])]*b[i]
+      )
+    
+    a$bipolar[which(a$year == colnames(b)[i])] <- as.numeric(
+      a$bipolar[which(a$year == colnames(b)[i])]*b[i]
+      )
+    
+    a$ed[which(a$year == colnames(b)[i])] <- as.numeric(
+      a$ed[which(a$year == colnames(b)[i])]*b[i]
+      )
   }
   
   absolute_gini[(grep(pop$Country.Name[j], relative_gini$country)),] <- a
@@ -305,12 +325,24 @@ Agora, vamos criar for loops para preencher esses objetos de médias com as méd
 for(i in 1:length(countries)){
   
   decade1_mean$country[i] <- countries[i]
-  decade1_mean$schizophrenia[i] <- mean(decade1$schizophrenia[which(decade1$country==countries[i])])
-  decade1_mean$depression[i] <- mean(decade1$depression[which(decade1$country==countries[i])])
-  decade1_mean$anxiety[i] <- mean(decade1$anxiety[which(decade1$country==countries[i])])
-  decade1_mean$bipolar[i] <- mean(decade1$bipolar[which(decade1$country==countries[i])])
-  decade1_mean$ed[i] <- mean(decade1$ed[which(decade1$country==countries[i])])
-  decade1_mean$gini[i] <- mean(decade1$gini[which(decade1$country==countries[i])])
+  decade1_mean$schizophrenia[i] <- mean(
+    decade1$schizophrenia[which(decade1$country==countries[i])]
+    )
+  decade1_mean$depression[i] <- mean(
+    decade1$depression[which(decade1$country==countries[i])]
+    )
+  decade1_mean$anxiety[i] <- mean(
+    decade1$anxiety[which(decade1$country==countries[i])]
+    )
+  decade1_mean$bipolar[i] <- mean(
+    decade1$bipolar[which(decade1$country==countries[i])]
+    )
+  decade1_mean$ed[i] <- mean(
+    decade1$ed[which(decade1$country==countries[i])]
+    )
+  decade1_mean$gini[i] <- mean(
+    decade1$gini[which(decade1$country==countries[i])]
+    )
   
 }
 
@@ -322,12 +354,24 @@ decade1_mean <- na.exclude(decade1_mean)
 for(i in 1:length(countries)){
   
   decade2_mean$country[i] <- countries[i]
-  decade2_mean$schizophrenia[i] <- mean(decade2$schizophrenia[which(decade2$country==countries[i])])
-  decade2_mean$depression[i] <- mean(decade2$depression[which(decade2$country==countries[i])])
-  decade2_mean$anxiety[i] <- mean(decade2$anxiety[which(decade2$country==countries[i])])
-  decade2_mean$bipolar[i] <- mean(decade2$bipolar[which(decade2$country==countries[i])])
-  decade2_mean$ed[i] <- mean(decade2$ed[which(decade2$country==countries[i])])
-  decade2_mean$gini[i] <- mean(decade2$gini[which(decade2$country==countries[i])])
+  decade2_mean$schizophrenia[i] <- mean(
+    decade2$schizophrenia[which(decade2$country==countries[i])]
+    )
+  decade2_mean$depression[i] <- mean(
+    decade2$depression[which(decade2$country==countries[i])]
+    )
+  decade2_mean$anxiety[i] <- mean(
+    decade2$anxiety[which(decade2$country==countries[i])]
+    )
+  decade2_mean$bipolar[i] <- mean(
+    decade2$bipolar[which(decade2$country==countries[i])]
+    )
+  decade2_mean$ed[i] <- mean(
+    decade2$ed[which(decade2$country==countries[i])]
+    )
+  decade2_mean$gini[i] <- mean(
+    decade2$gini[which(decade2$country==countries[i])]
+    )
   
 }
 
@@ -339,12 +383,24 @@ decade2_mean <- na.exclude(decade2_mean)
 for(i in 1:length(countries)){
   
   decade3_mean$country[i] <- countries[i]
-  decade3_mean$schizophrenia[i] <- mean(decade3$schizophrenia[which(decade3$country==countries[i])])
-  decade3_mean$depression[i] <- mean(decade3$depression[which(decade3$country==countries[i])])
-  decade3_mean$anxiety[i] <- mean(decade3$anxiety[which(decade3$country==countries[i])])
-  decade3_mean$bipolar[i] <- mean(decade3$bipolar[which(decade3$country==countries[i])])
-  decade3_mean$ed[i] <- mean(decade3$ed[which(decade3$country==countries[i])])
-  decade3_mean$gini[i] <- mean(decade3$gini[which(decade3$country==countries[i])])
+  decade3_mean$schizophrenia[i] <- mean(
+    decade3$schizophrenia[which(decade3$country==countries[i])]
+    )
+  decade3_mean$depression[i] <- mean(
+    decade3$depression[which(decade3$country==countries[i])]
+    )
+  decade3_mean$anxiety[i] <- mean(
+    decade3$anxiety[which(decade3$country==countries[i])]
+    )
+  decade3_mean$bipolar[i] <- mean(
+    decade3$bipolar[which(decade3$country==countries[i])]
+    )
+  decade3_mean$ed[i] <- mean(
+    decade3$ed[which(decade3$country==countries[i])]
+    )
+  decade3_mean$gini[i] <- mean(
+    decade3$gini[which(decade3$country==countries[i])]
+    )
   
 }
 
@@ -368,7 +424,10 @@ Acabamos não precisando disso, mas categorizamos os países em continentes tamb
 Por fim, vamos salvar essa tabela, para podermos acessá-la facilmente quando quisermos:
 
 ```{r}
-write.table(decades, file=here("data", "processed", "decade_means_absolute.txt"), sep="\t", row.names=F)
+write.table(decades,
+            file=here("data", "processed", "decade_means_absolute.txt"),
+            sep="\t",
+            row.names=F)
 ```
 
 Com isso, nossos dados estão prontos para fazermos as análises de modelagem!
@@ -380,7 +439,8 @@ Com isso, nossos dados estão prontos para fazermos as análises de modelagem!
 Como não estamos avaliando causalidade entre transtornos, somente a correlação, usamos uma correlação linear simples para testar se os transtornos mentais estão relacionados entre si. Vamos começar fazendo essa avaliação carregando a tabela de médias por década com dados absolutos populacionais, e guardá-la no objeto `decades`:
 
 ```{r}
-decades <- read.table(here("data","processed","decade_means_absolute.txt"), header=T)
+decades <- read.table(here("data","processed","decade_means_absolute.txt"),
+                      header=T)
 ```
 
 Agora, como não estamos interessados na correlação entre transtornos ao longo do tempo, vamos fazer a média de prevalência dos transtornos por país, de forma a obter apenas um valor de prevalência na população por país:
@@ -450,7 +510,8 @@ library(DHARMa)
 Também vamos precisar dos dados absolutos, e de transformar as décadas em fatores numéricos. Isso é importante porque o texto separado por hífen pode nos causar problemas em diante:
 
 ```{r}
-abs_decades <- read.table(here("data","processed","decade_means_absolute.txt"), header=T)
+abs_decades <- read.table(here("data","processed","decade_means_absolute.txt"),
+                          header=T)
 
 abs_decades$decade[which(abs_decades$decade=="1990-1999")] <- 1
 abs_decades$decade[which(abs_decades$decade=="2000-2009")] <- 2
@@ -461,8 +522,12 @@ abs_decades$decade <- as.factor(abs_decades$decade)
 Vamos colocar na tabela de dados absolutos também os dados de população como uma coluna nova:
 
 ```{r}
-worldbank_1 <- read.csv(here("data","raw","worldbank","WDICSV.csv"), sep=",", header=T)
-pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),] # only population data
+worldbank_1 <- read.csv(
+  here("data","raw","worldbank","WDICSV.csv"),
+  sep=",",
+  header=T)
+#extract only population data
+pop <- worldbank_1[which(worldbank_1$Indicator.Name=="Population, total"),]
 pop <- pop[which(pop$Country.Name %in% abs_decades$country),]
 pop <- t(pop)
 
@@ -484,11 +549,17 @@ pop <- data.frame(pop)
 
 for(i in 1:length(abs_decades$country)){
   
-  abs_decades$pop[which(abs_decades$country==countries[i] & abs_decades$decade==1)] <- mean(pop[(which(pop$year>1989 & pop$year<2000)),i])
+  abs_decades$pop[which(abs_decades$country==countries[i]
+                        & abs_decades$decade==1)] <- mean(
+    pop[(which(pop$year>1989 & pop$year<2000)),i])
   
-  abs_decades$pop[which(abs_decades$country==countries[i] & abs_decades$decade==2)] <- mean(pop[(which(pop$year>1999 & pop$year<2010)),i])
+  abs_decades$pop[which(abs_decades$country==countries[i]
+                        & abs_decades$decade==2)] <- mean(
+    pop[(which(pop$year>1999 & pop$year<2010)),i])
   
-  abs_decades$pop[which(abs_decades$country==countries[i] & abs_decades$decade==3)] <- mean(pop[(which(pop$year>2009 & pop$year<2020)),i])
+  abs_decades$pop[which(abs_decades$country==countries[i]
+                        & abs_decades$decade==3)] <- mean(
+    pop[(which(pop$year>2009 & pop$year<2020)),i])
   
 }
 ```
